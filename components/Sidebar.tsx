@@ -14,6 +14,7 @@ const NAV_ITEMS: NavItem[] = [
   { key: "text-to-sign", label: "Text to Sign", icon: "⌨️" },
   { key: "sign-to-text", label: "Sign to Text", icon: "📷" },
   { key: "dictionary", label: "Dictionary & Quizzes", icon: "📖" },
+  { key: "ai-tutor", label: "AI Tutor", icon: "🤖" },
 ];
 
 interface SidebarProps {

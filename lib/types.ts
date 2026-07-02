@@ -3,7 +3,8 @@ export type TabKey =
   | "lessons"
   | "text-to-sign"
   | "sign-to-text"
-  | "dictionary";
+  | "dictionary"
+  | "ai-tutor";
 
 export interface VocabItem {
   word: string;

@@ -12,6 +12,16 @@ interface QuizModalProps {
   onFinish?: (score: { correct: number; total: number }) => void;
 }
 
+function recordMissedLetter(letter: string) {
+  try {
+    const existing: string[] = JSON.parse(localStorage.getItem("signspeak_missed_letters") || "[]");
+    const updated = [...existing.filter((entry) => entry !== letter), letter].slice(-10);
+    localStorage.setItem("signspeak_missed_letters", JSON.stringify(updated));
+  } catch {
+    localStorage.setItem("signspeak_missed_letters", JSON.stringify([letter]));
+  }
+}
+
 function shuffledQuizItems(): VocabItem[] {
   const alphabet = curriculumData.beginner.find((module) => module.id === "alphabet")!.items;
   const shuffled = [...alphabet];
@@ -41,6 +51,10 @@ export default function QuizModal({ onClose, onFinish }: QuizModalProps) {
   function scoreAndAdvance(gotItRight: boolean) {
     const nextScore = { correct: score.correct + (gotItRight ? 1 : 0), total: score.total + 1 };
     setScore(nextScore);
+
+    if (!gotItRight) {
+      recordMissedLetter(currentItem.word);
+    }
 
     if (currentIndex === total - 1) {
       setIsComplete(true);

@@ -55,7 +55,7 @@ export default function SignToTextTab() {
           setLiveLandmarks(mirrored);
 
           const extended = extendedVectorFromLandmarks(rawLandmarks);
-          const candidate = matchSign(extended);
+          const candidate = matchSign(extended, rawLandmarks[0]?.y);
           const isConfident = candidate.confidence >= CONFIDENCE_THRESHOLD;
           setMatch(isConfident ? candidate : null);
 
@@ -72,7 +72,15 @@ export default function SignToTextTab() {
               lastCommittedRef.current !== candidate.word
             ) {
               lastCommittedRef.current = candidate.word;
-              setOutputText((prev) => `${prev}${candidate.word}`);
+              setOutputText((prev) => {
+                if (candidate.isScriptedWord) {
+                  const trimmedPrev = prev.trimEnd();
+                  return trimmedPrev.length > 0
+                    ? `${trimmedPrev} ${candidate.word} `
+                    : `${candidate.word} `;
+                }
+                return `${prev}${candidate.word}`;
+              });
             }
           } else {
             lastCandidateRef.current = null;
@@ -151,9 +159,9 @@ export default function SignToTextTab() {
   }
 
   function speakOutput() {
-    if (!outputText || typeof window.speechSynthesis === "undefined") return;
-    const utterance = new SpeechSynthesisUtterance(outputText.split("").join(" "));
-    window.speechSynthesis.speak(utterance);
+    const trimmed = outputText.trim();
+    if (!trimmed || typeof window.speechSynthesis === "undefined") return;
+    window.speechSynthesis.speak(new SpeechSynthesisUtterance(trimmed));
   }
 
   return (
@@ -217,12 +225,12 @@ export default function SignToTextTab() {
               </button>
             </div>
             <p className="mt-1 min-h-[2rem] text-lg font-extrabold tracking-wide text-espresso">
-              {outputText || "…"}
+              {outputText.trim() || "…"}
             </p>
             <button
               type="button"
               onClick={speakOutput}
-              disabled={!outputText}
+              disabled={!outputText.trim()}
               className="mt-2 rounded-xl bg-purple px-3 py-1.5 text-xs font-bold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
             >
               + Speak Output
@@ -246,8 +254,12 @@ export default function SignToTextTab() {
             total={1}
           />
           <p className="text-xs text-muted">
-            Live hand pose is compared against the 26-letter manual alphabet database. Motion-based
-            signs (like J, Z, or full phrases) can&apos;t be matched from a single frame.
+            Live hand pose is checked first against 6 scripted whole-word signs (Hello, Thank you,
+            Please, Yes, No, I love you), then falls back to the 26-letter manual alphabet. Hello,
+            Thank you, and Please share the same open-hand shape, so they&apos;re told apart by hand
+            height in frame (near your head vs. chin vs. chest) — try holding your hand at different
+            heights if it picks the wrong one. Motion-based signs and full phrases can&apos;t be
+            matched from a single frame.
           </p>
         </div>
       </div>

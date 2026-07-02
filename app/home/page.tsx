@@ -6,9 +6,17 @@ import Sidebar from "@/components/Sidebar";
 import { DashboardStats, DashboardTab, DictionaryTab, TextToSignTab } from "@/components/HomeTabs";
 import SignToTextTab from "@/components/SignToTextTab";
 import QuizModal from "@/components/QuizModal";
+import AITutorTab from "@/components/AITutorTab";
 import { TabKey } from "@/lib/types";
 
-const TAB_KEYS: TabKey[] = ["dashboard", "lessons", "text-to-sign", "sign-to-text", "dictionary"];
+const TAB_KEYS: TabKey[] = [
+  "dashboard",
+  "lessons",
+  "text-to-sign",
+  "sign-to-text",
+  "dictionary",
+  "ai-tutor",
+];
 
 function isTabKey(value: string | null): value is TabKey {
   return value !== null && (TAB_KEYS as string[]).includes(value);
@@ -77,6 +85,7 @@ function HomeContent() {
         {activeTab === "text-to-sign" && <TextToSignTab />}
         {activeTab === "sign-to-text" && <SignToTextTab />}
         {activeTab === "dictionary" && <DictionaryTab onStartQuiz={() => setIsQuizOpen(true)} />}
+        {activeTab === "ai-tutor" && <AITutorTab />}
       </main>
 
       {isQuizOpen && <QuizModal onClose={() => setIsQuizOpen(false)} />}
