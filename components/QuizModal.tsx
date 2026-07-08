@@ -3,7 +3,9 @@
 import { useState } from "react";
 import HandVisionPanel from "@/components/HandVisionPanel";
 import { curriculumData } from "@/lib/curriculumData";
+import { framesForItem } from "@/lib/handShapes";
 import { VocabItem } from "@/lib/types";
+import { VOCABULARY } from "@/lib/vocabulary";
 
 const QUIZ_LENGTH = 8;
 
@@ -24,7 +26,9 @@ function recordMissedLetter(letter: string) {
 
 function shuffledQuizItems(): VocabItem[] {
   const alphabet = curriculumData.beginner.find((module) => module.id === "alphabet")!.items;
-  const shuffled = [...alphabet];
+  // Mix fingerspelling with everyday vocabulary for a fuller challenge
+  const pool = [...alphabet, ...VOCABULARY];
+  const shuffled = [...pool];
   for (let i = shuffled.length - 1; i > 0; i -= 1) {
     const j = Math.floor(Math.random() * (i + 1));
     [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
@@ -72,7 +76,7 @@ export default function QuizModal({ onClose, onFinish }: QuizModalProps) {
       <div className="w-full max-w-4xl rounded-3xl border border-espresso/10 bg-cream p-8 shadow-xl">
         <div className="mb-6 flex items-center justify-between">
           <div>
-            <p className="text-sm font-bold text-muted">Daily Quiz · Manual Alphabet</p>
+            <p className="text-sm font-bold text-muted">Daily Quiz · Signs &amp; Letters</p>
             {!isComplete && (
               <p className="text-xs text-muted">
                 Question {currentIndex + 1} of {total}
@@ -90,14 +94,14 @@ export default function QuizModal({ onClose, onFinish }: QuizModalProps) {
 
         <div className="mb-8 h-2 w-full overflow-hidden rounded-full bg-espresso/10">
           <div
-            className="h-full rounded-full bg-purple transition-all duration-300"
+            className="h-full rounded-full bg-coral transition-all duration-300"
             style={{ width: `${isComplete ? 100 : progressPercent}%` }}
           />
         </div>
 
         {isComplete ? (
           <div className="flex flex-col items-center justify-center space-y-4 py-12 text-center">
-            <p className="text-sm font-bold uppercase tracking-wide text-purple">Quiz complete</p>
+            <p className="text-sm font-bold uppercase tracking-wide text-coral">Quiz complete</p>
             <p className="text-4xl font-extrabold text-espresso">
               {score.correct} / {score.total}
             </p>
@@ -118,8 +122,8 @@ export default function QuizModal({ onClose, onFinish }: QuizModalProps) {
           <>
             <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
               <div className="flex flex-col justify-center space-y-4">
-                <p className="text-sm font-bold uppercase tracking-wide text-purple">
-                  How do you sign this letter?
+                <p className="text-sm font-bold uppercase tracking-wide text-coral">
+                  How do you sign this?
                 </p>
                 <h2 className="text-5xl font-extrabold tracking-tight text-espresso">
                   {currentItem.word.toUpperCase()}
@@ -135,7 +139,7 @@ export default function QuizModal({ onClose, onFinish }: QuizModalProps) {
                     disabled={isRevealed}
                     rows={3}
                     placeholder="e.g. Which fingers are extended? Where is the thumb? Is there any movement?"
-                    className="w-full rounded-2xl border border-espresso/10 bg-white px-4 py-3 text-sm outline-none focus:border-purple disabled:bg-espresso/5"
+                    className="w-full rounded-2xl border border-espresso/10 bg-white px-4 py-3 text-sm outline-none focus:border-coral disabled:bg-espresso/5"
                   />
                 </div>
 
@@ -143,7 +147,7 @@ export default function QuizModal({ onClose, onFinish }: QuizModalProps) {
                   <button
                     type="button"
                     onClick={revealAnswer}
-                    className="rounded-2xl bg-purple px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:opacity-90"
+                    className="rounded-2xl bg-coral px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:opacity-90"
                   >
                     Show Hand Sign
                   </button>
@@ -178,9 +182,9 @@ export default function QuizModal({ onClose, onFinish }: QuizModalProps) {
               </div>
 
               <HandVisionPanel
-                word={currentItem.word}
+                label={isRevealed ? currentItem.word : "Hidden"}
+                frames={isRevealed ? framesForItem(currentItem) : undefined}
                 visualCue={isRevealed ? currentItem.visualCue : "Handshape hidden until revealed"}
-                description={isRevealed ? currentItem.description : undefined}
                 trackingStatus={isRevealed ? "active" : "searching"}
                 index={currentIndex}
                 total={total}

@@ -1,3 +1,5 @@
+import type { SignStep } from "./handShapes";
+
 export type TabKey =
   | "dashboard"
   | "lessons"
@@ -8,9 +10,12 @@ export type TabKey =
 
 export interface VocabItem {
   word: string;
-  type: "Letter" | "Greeting" | "Emotion" | "Phrase" | "Word";
+  /** Category badge, e.g. "Letter", "Greeting", "Food & Drink" */
+  type: string;
   description: string;
   visualCue: string;
+  /** Structured pose sequence; when present, drives the animated hand accurately. */
+  steps?: SignStep[];
 }
 
 export type Tier = "beginner" | "intermediate" | "advanced";

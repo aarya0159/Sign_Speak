@@ -66,6 +66,10 @@ export default function LessonsPage() {
 
   function handleSidebarNavigate(tab: TabKey) {
     if (tab === "lessons") return;
+    if (tab === "ai-tutor") {
+      router.push("/tutor");
+      return;
+    }
     router.push(`/home?tab=${tab}`);
   }
 
@@ -86,17 +90,17 @@ export default function LessonsPage() {
     <div className="flex min-h-screen bg-cream">
       <Sidebar activeTab="lessons" onNavigate={handleSidebarNavigate} onLogout={handleLogout} />
 
-      <main className="flex-1 overflow-y-auto px-10 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-extrabold tracking-tight text-espresso">
-            Learning Pathway
+      <main className="flex-1 overflow-y-auto px-6 py-8 sm:px-10">
+        <div className="animate-fade-up mb-8">
+          <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
+            Learning <span className="text-sunset">Pathway</span>
           </h1>
           <p className="mt-1 text-muted">
             Progress through structured tiers, one module at a time.
           </p>
         </div>
 
-        <div className="mb-8 inline-flex rounded-2xl border border-espresso/10 bg-white/70 p-1 backdrop-blur-md">
+        <div className="animate-fade-up mb-8 inline-flex rounded-full border border-espresso/10 bg-white/70 p-1 backdrop-blur-md">
           {TIERS.map((tier) => {
             const isActive = tier === activeTier;
             return (
@@ -104,8 +108,10 @@ export default function LessonsPage() {
                 key={tier}
                 type="button"
                 onClick={() => setActiveTier(tier)}
-                className={`rounded-xl px-5 py-2 text-sm font-bold transition ${
-                  isActive ? "bg-purple text-white" : "text-espresso/60 hover:text-espresso"
+                className={`rounded-full px-5 py-2 text-sm font-bold transition-all duration-300 ${
+                  isActive
+                    ? "bg-gradient-to-r from-coral to-honey text-white shadow-warm-sm"
+                    : "text-espresso/60 hover:text-coral-deep"
                 }`}
               >
                 {tierLabels[tier]}
@@ -114,19 +120,17 @@ export default function LessonsPage() {
           })}
         </div>
 
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+        <div key={activeTier} className="animate-fade-up grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
           {modulesForTier.map((module) => {
             const isComplete = completedModules.has(module.id);
             return (
               <div
                 key={module.id}
-                className="flex flex-col justify-between rounded-2xl border border-espresso/10 bg-white/70 p-6 backdrop-blur-md"
+                className="card-warm card-warm-hover flex flex-col justify-between p-6"
               >
                 <div>
                   <div className="mb-3 flex items-center justify-between">
-                    <span className="rounded-full bg-purple-soft px-3 py-1 text-xs font-bold text-purple">
-                      {module.items.length} cards
-                    </span>
+                    <span className="chip-warm">{module.items.length} cards</span>
                     {isComplete && (
                       <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-green-700">
                         Completed
@@ -140,7 +144,7 @@ export default function LessonsPage() {
                 <button
                   type="button"
                   onClick={() => setSelectedModule(module)}
-                  className="mt-6 w-full rounded-2xl bg-purple py-3 text-sm font-bold text-white transition hover:opacity-90"
+                  className="btn-sunset mt-6 w-full py-3 text-sm"
                 >
                   Study Lesson
                 </button>

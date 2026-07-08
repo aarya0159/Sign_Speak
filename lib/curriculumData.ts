@@ -1,4 +1,5 @@
 import { CurriculumModule, Tier, VocabItem } from "./types";
+import { Category, vocabularyByCategory } from "./vocabulary";
 
 const alphabet: VocabItem[] = [
   {
@@ -185,56 +186,11 @@ const alphabet: VocabItem[] = [
   },
 ];
 
-const greetings: VocabItem[] = [
-  {
-    word: "Hi / Hello",
-    type: "Greeting",
-    description:
-      "Open hand near the temple, palm facing forward, moves outward and slightly downward in a small arc, similar to a relaxed salute.",
-    visualCue: "Open palm plane · outward temple arc",
-  },
-  {
-    word: "Thank You",
-    type: "Greeting",
-    description:
-      "Flat hand touches the chin with the fingertips, palm facing inward, then moves forward and down toward the person being thanked.",
-    visualCue: "Flat palm plane · chin-to-forward path",
-  },
-];
-
-const emotions: VocabItem[] = [
-  {
-    word: "Fantastic / Wonderful",
-    type: "Emotion",
-    description:
-      "Both open hands, palms facing forward near the shoulders, push upward and outward simultaneously with a brief shake, as if radiating excitement outward.",
-    visualCue: "Dual open palms · symmetric upward burst",
-  },
-  {
-    word: "Excited",
-    type: "Emotion",
-    description:
-      "Both open hands alternate in small upward circular tracking movements near the torso, one rising as the other dips, mirroring rising energy.",
-    visualCue: "Alternating dual palms · upward circular torso track",
-  },
-];
-
-const phrases: VocabItem[] = [
-  {
-    word: "Nice to meet you.",
-    type: "Phrase",
-    description:
-      "A three-part sign chain: NICE (a flat hand slides forward across the open palm of the other hand), then MEET (two upright index fingers move toward each other until they touch), then YOU (index finger points toward the other person).",
-    visualCue: "Sequential 3-node chain · slide, converge, point",
-  },
-  {
-    word: "Can you help me?",
-    type: "Phrase",
-    description:
-      "A four-part sign chain: CAN (both fists drop down firmly together), HELP (one flat hand lifts the other closed fist upward from beneath), YOU (index finger points outward), and ME (index finger points back to the chest), accompanied by raised eyebrows to indicate a question.",
-    visualCue: "Sequential 4-node chain · drop, lift, point, point",
-  },
-];
+// Note: deliberately not named "module" — that would shadow webpack's CommonJS
+// `module` object and crash the dev-mode React Refresh runtime.
+function buildModule(id: string, title: string, summary: string, category: Category): CurriculumModule {
+  return { id, title, summary, items: vocabularyByCategory(category) };
+}
 
 export const curriculumData: Record<Tier, CurriculumModule[]> = {
   beginner: [
@@ -244,28 +200,26 @@ export const curriculumData: Record<Tier, CurriculumModule[]> = {
       summary: "Master all 26 handshapes of ASL fingerspelling, A through Z.",
       items: alphabet,
     },
-    {
-      id: "greetings",
-      title: "Essential Greetings",
-      summary: "Start every conversation with confidence.",
-      items: greetings,
-    },
+    buildModule("numbers", "Numbers 1–10", "Count on one hand, the ASL way.", "Numbers"),
+    buildModule("greetings", "Greetings & Politeness", "Start every conversation with warmth.", "Greetings & Politeness"),
+    buildModule("family", "Family & People", "Talk about the people in your life.", "Family & People"),
+    buildModule("pronouns", "Pronouns", "Point precisely: me, you, us, them.", "Pronouns"),
+    buildModule("responses", "Yes, No & Responses", "Answer naturally in conversation.", "Responses"),
   ],
   intermediate: [
-    {
-      id: "emotions",
-      title: "Expressing Emotions",
-      summary: "Show how you feel with expressive, dynamic signs.",
-      items: emotions,
-    },
+    buildModule("actions", "Everyday Actions", "The verbs you'll use constantly.", "Everyday Actions"),
+    buildModule("feelings", "Feelings & Emotions", "Show how you feel with expressive signs.", "Feelings"),
+    buildModule("food", "Food & Drink", "Order, cook, and talk about meals.", "Food & Drink"),
+    buildModule("questions", "Question Words", "Ask who, what, where, when, why, and how.", "Questions"),
+    buildModule("time", "Time & Days", "Talk about today, tomorrow, and beyond.", "Time"),
   ],
   advanced: [
-    {
-      id: "phrases",
-      title: "Conversational Phrases",
-      summary: "Chain multiple signs together into full, natural sentences.",
-      items: phrases,
-    },
+    buildModule("places", "Places & Going Out", "Navigate the world around you.", "Places"),
+    buildModule("descriptors", "Describing Words", "Add color and detail to your signing.", "Describing Words"),
+    buildModule("colors", "Colors", "The full palette, one handshape at a time.", "Colors"),
+    buildModule("household", "Around the House", "Objects and things you use daily.", "Around the House"),
+    buildModule("nature", "Nature & Animals", "Weather, plants, and pets.", "Nature & Animals"),
+    buildModule("phrases", "Conversational Phrases", "Chain signs into full, natural sentences.", "Phrases"),
   ],
 };
 

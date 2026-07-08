@@ -1,0 +1,664 @@
+import type { HandShapeKey, MotionKey, LocationKey, SignStep, Curls } from "./handShapes";
+import type { VocabItem } from "./types";
+
+/**
+ * Common ASL vocabulary with structured pose data (handshape · location · motion).
+ * Descriptions follow standard ASL references (Lifeprint ASL University, Handspeak,
+ * Signing Savvy). Many real signs are two-handed or carry facial grammar; the
+ * animated skeleton shows the dominant hand as a learning aid — descriptions note
+ * when the non-dominant hand is involved. Signs we could not describe confidently
+ * were left out rather than guessed.
+ */
+
+export type Category =
+  | "Greetings & Politeness"
+  | "Family & People"
+  | "Pronouns"
+  | "Questions"
+  | "Responses"
+  | "Everyday Actions"
+  | "Feelings"
+  | "Food & Drink"
+  | "Time"
+  | "Places"
+  | "Describing Words"
+  | "Colors"
+  | "Around the House"
+  | "Nature & Animals"
+  | "Numbers"
+  | "Phrases";
+
+function sign(
+  word: string,
+  type: Category,
+  shape: HandShapeKey | Curls,
+  location: LocationKey,
+  motion: MotionKey,
+  description: string,
+  visualCue?: string,
+): VocabItem {
+  return {
+    word,
+    type,
+    description,
+    visualCue: visualCue ?? `${Array.isArray(shape) ? "custom" : shape} hand · ${location} · ${motion}`,
+    steps: [{ shape, location, motion }],
+  };
+}
+
+function phrase(word: string, type: Category, steps: SignStep[], description: string): VocabItem {
+  return {
+    word,
+    type,
+    description,
+    visualCue: `${steps.length}-part sign chain`,
+    steps,
+  };
+}
+
+const greetings: VocabItem[] = [
+  sign("Hello", "Greetings & Politeness", "open", "temple", "arcOut",
+    "Open flat hand near the temple, palm facing forward, moves outward in a small arc, like a relaxed salute."),
+  sign("Goodbye", "Greetings & Politeness", "open", "side", "shake",
+    "Open hand raised at head height, palm out, fingers wave up and down — the familiar wave goodbye."),
+  sign("Please", "Greetings & Politeness", "flat", "chest", "circle",
+    "Flat open hand rests on the chest and rubs in a smooth circular motion."),
+  sign("Thank you", "Greetings & Politeness", "flat", "chin", "arcOut",
+    "Flat hand touches the chin with the fingertips, palm in, then moves forward and down toward the person being thanked."),
+  sign("You're welcome", "Greetings & Politeness", "flat", "neutral", "arcDown",
+    "Flat open hand, palm up, arcs inward toward the body, like graciously accepting thanks."),
+  sign("Sorry", "Greetings & Politeness", "thumbFist", "chest", "circle",
+    "Fist (A-hand) circles on the chest over the heart — as if rubbing away a wrong."),
+  sign("Excuse me", "Greetings & Politeness", "flat", "neutral", "shake",
+    "Fingertips of one bent hand brush across the upturned palm of the other hand a couple of times."),
+  sign("Welcome", "Greetings & Politeness", "flat", "side", "arcDown",
+    "Flat hand, palm up, sweeps from the side in toward the waist, as if ushering someone in."),
+  sign("Good", "Greetings & Politeness", "flat", "chin", "arcDown",
+    "Flat hand touches the chin, then drops down to land palm-up on the other palm."),
+  sign("Morning", "Greetings & Politeness", "flat", "neutral", "up",
+    "With the non-dominant arm horizontal like the horizon, the dominant flat hand rises up behind it like the sun coming up."),
+  sign("Night", "Greetings & Politeness", "claw", "neutral", "down",
+    "The dominant bent hand drops down over the flat non-dominant arm, like the sun setting below the horizon."),
+  sign("Nice", "Greetings & Politeness", "flat", "neutral", "forward",
+    "Flat dominant palm slides smoothly forward across the upturned non-dominant palm."),
+];
+
+const family: VocabItem[] = [
+  sign("Mother", "Family & People", "open", "chin", "tap",
+    "Open hand, fingers spread, thumb taps the chin twice."),
+  sign("Father", "Family & People", "open", "forehead", "tap",
+    "Open hand, fingers spread, thumb taps the forehead twice."),
+  sign("Grandmother", "Family & People", "open", "chin", "arcOut",
+    "Open hand starts with thumb at the chin (like MOTHER), then arcs forward in two small hops."),
+  sign("Grandfather", "Family & People", "open", "forehead", "arcOut",
+    "Open hand starts with thumb at the forehead (like FATHER), then arcs forward in two small hops."),
+  sign("Sister", "Family & People", "L", "chin", "down",
+    "A-hand thumb traces the jaw (girl area), then both index fingers come together — shown here as the L-hand dropping from chin to meet the other hand."),
+  sign("Brother", "Family & People", "L", "forehead", "down",
+    "A-hand thumb at the forehead (boy area), then both index fingers come together — the L-hand drops from forehead to meet the other hand."),
+  sign("Baby", "Family & People", "flat", "stomach", "updown",
+    "Both arms stack as if cradling an infant and rock gently side to side."),
+  sign("Family", "Family & People", "F", "neutral", "circle",
+    "Both F-hands start together, palms out, then circle outward until the pinkies meet, enclosing the 'family circle.'"),
+  sign("Friend", "Family & People", "hook", "neutral", "twist",
+    "Hooked index fingers link together, then reverse and link the other way — two lives interlocked."),
+  sign("Boy", "Family & People", "flatO", "forehead", "openClose",
+    "Flattened-O hand opens and closes at the forehead, like gripping the brim of a cap."),
+  sign("Girl", "Family & People", "thumbFist", "cheek", "down",
+    "A-hand thumb traces down along the jawline from ear toward chin."),
+  sign("Man", "Family & People", "flatO", "forehead", "arcDown",
+    "Flattened-O at the forehead (like BOY) then the open hand moves down to touch the chest."),
+  sign("Woman", "Family & People", "thumbFist", "chin", "arcDown",
+    "A-hand thumb at the chin (like GIRL) then the open hand moves down to touch the chest."),
+  sign("Teacher", "Family & People", "flatO", "forehead", "forward",
+    "Both flattened-O hands move forward from the temples (TEACH), followed by flat hands sliding down the sides of the body (person marker)."),
+  sign("People", "Family & People", "F", "neutral", "updown",
+    "Both P/F-hands make small alternating downward circles in front of the body."),
+];
+
+const pronouns: VocabItem[] = [
+  sign("I / Me", "Pronouns", "one", "chest", "tap",
+    "Index finger points to and touches the center of your own chest."),
+  sign("You", "Pronouns", "one", "neutral", "forward",
+    "Index finger points directly at the person you're talking to."),
+  sign("He / She", "Pronouns", "one", "side", "forward",
+    "Index finger points off to the side, toward the person being referred to."),
+  sign("We", "Pronouns", "one", "chest", "arcOut",
+    "Index finger touches one side of the chest, arcs across, and touches the other side."),
+  sign("They", "Pronouns", "open", "side", "arcOut",
+    "Open hand, palm up, sweeps sideways across the space in front of you, indicating a group."),
+  sign("My / Mine", "Pronouns", "flat", "chest", "tap",
+    "Flat open hand, palm in, pats the center of the chest."),
+  sign("Your", "Pronouns", "flat", "neutral", "forward",
+    "Flat open hand, palm out, pushes slightly toward the other person."),
+];
+
+const questions: VocabItem[] = [
+  sign("What", "Questions", "open", "neutral", "shake",
+    "Both open hands, palms up in front of the body, shake slightly side to side with a questioning face."),
+  sign("Where", "Questions", "one", "neutral", "shake",
+    "Index finger pointing up wags quickly side to side, eyebrows squeezed in a question."),
+  sign("When", "Questions", "one", "neutral", "circle",
+    "One index finger circles around the other upright index finger, then lands on its tip."),
+  sign("Who", "Questions", "one", "chin", "circle",
+    "Bent index finger circles in a small motion in front of the chin (or the thumb rests on the chin as the index wiggles)."),
+  phrase("Why", "Questions", [
+    { shape: "open", location: "forehead", motion: "tap", label: "Touch forehead" },
+    { shape: "Y", location: "neutral", motion: "shake", label: "Y-hand shakes" },
+  ], "Fingers touch the forehead, then the hand pulls away, changing into a Y-hand that wiggles slightly, with questioning eyebrows."),
+  sign("How", "Questions", "claw", "neutral", "twist",
+    "Both bent hands, knuckles touching back-to-back, roll forward and open until the palms face up."),
+  sign("Which", "Questions", "thumbUp", "neutral", "updown",
+    "Both A-hands with thumbs up alternate up and down in front of the body — weighing two options."),
+];
+
+const responses: VocabItem[] = [
+  sign("Yes", "Responses", "fist", "neutral", "nod",
+    "Fist (S-hand) bends up and down at the wrist, like a head nodding yes."),
+  sign("No", "Responses", "bentV", "neutral", "tap",
+    "Index and middle fingers snap closed together against the thumb, once or twice — like a quick 'no' pinch."),
+  sign("Maybe", "Responses", "flat", "neutral", "updown",
+    "Both flat hands, palms up, alternate slowly up and down like a balance scale tipping."),
+  sign("Understand", "Responses", "one", "forehead", "openClose",
+    "Fist at the forehead flicks the index finger straight up — the lightbulb of understanding turning on."),
+  sign("Know", "Responses", "flat", "forehead", "tap",
+    "Bent flat hand taps the fingertips against the side of the forehead."),
+  phrase("Don't know", "Responses", [
+    { shape: "flat", location: "forehead", motion: "tap", label: "Know" },
+    { shape: "open", location: "side", motion: "twist", label: "Flip away" },
+  ], "Fingertips touch the forehead (KNOW), then the hand flips outward and away, palm out — knowledge tossed aside."),
+  sign("Right / Correct", "Responses", "one", "neutral", "down",
+    "Both index-finger hands, one above the other, tap together — the top hand landing on the bottom one."),
+  sign("Wrong", "Responses", "Y", "chin", "tap",
+    "Y-hand, palm in, taps the middle of the chin."),
+  sign("OK", "Responses", "F", "neutral", "forward",
+    "Fingerspelled O then K, held slightly forward — often just the familiar F-like OK shape pushed toward the listener."),
+];
+
+const actions: VocabItem[] = [
+  sign("Eat", "Everyday Actions", "flatO", "mouth", "tap",
+    "Flattened-O hand (fingertips together) taps toward the mouth, like bringing food to your lips."),
+  sign("Drink", "Everyday Actions", "C", "mouth", "nod",
+    "C-hand tips toward the mouth, like tilting a cup to drink."),
+  phrase("Sleep", "Everyday Actions", [
+    { shape: "open", location: "forehead", motion: "none", label: "Open at face" },
+    { shape: "flatO", location: "chin", motion: "down", label: "Draw closed" },
+  ], "Open hand in front of the face draws down and closes into a flattened-O near the chin, as the eyes close."),
+  sign("Work", "Everyday Actions", "fist", "neutral", "tap",
+    "Both S-hand fists, palms down; the dominant fist taps the back of the non-dominant fist twice."),
+  sign("Play", "Everyday Actions", "Y", "neutral", "twist",
+    "Both Y-hands twist quickly back and forth from the wrists."),
+  sign("Help", "Everyday Actions", "thumbUp", "neutral", "up",
+    "A-hand with thumb up sits on the flat non-dominant palm; both rise together — the palm boosting the fist up."),
+  sign("Stop", "Everyday Actions", "flat", "neutral", "down",
+    "Flat dominant hand chops down onto the upturned non-dominant palm, like a gavel."),
+  sign("Go", "Everyday Actions", "one", "neutral", "forward",
+    "Both index fingers point and move forward in the direction of travel."),
+  sign("Come", "Everyday Actions", "one", "neutral", "arcDown",
+    "Both index fingers, palms up, curl and beckon in toward the body."),
+  sign("Want", "Everyday Actions", "claw", "neutral", "forward",
+    "Both claw hands, palms up, pull in toward the body — grabbing what you want."),
+  sign("Need", "Everyday Actions", "hook", "neutral", "down",
+    "X-hand (bent index) bends firmly downward from the wrist, once for 'need,' repeated for 'must.'"),
+  phrase("Like", "Everyday Actions", [
+    { shape: "open", location: "chest", motion: "none", label: "Open at chest" },
+    { shape: "F", location: "neutral", motion: "forward", label: "Pull to 8-hand" },
+  ], "Open hand at the chest pulls forward, thumb and middle finger closing together — drawing your interest out."),
+  sign("Love", "Everyday Actions", "fist", "heart", "none",
+    "Both fists cross over the heart, hugging the chest."),
+  sign("Have", "Everyday Actions", "claw", "chest", "tap",
+    "Bent-hand fingertips of both hands touch the chest."),
+  sign("Give", "Everyday Actions", "flatO", "neutral", "forward",
+    "Flattened-O hand moves out from the body toward the receiver, opening slightly — handing something over."),
+  phrase("Get", "Everyday Actions", [
+    { shape: "open", location: "neutral", motion: "none", label: "Reach open" },
+    { shape: "fist", location: "chest", motion: "none", label: "Pull in closed" },
+  ], "Open hands reach out and close into fists while pulling in toward the body — grabbing something and bringing it in."),
+  sign("Make", "Everyday Actions", "fist", "neutral", "twist",
+    "S-hand fist sits on top of the other fist; they twist against each other, like shaping something."),
+  sign("See", "Everyday Actions", "two", "eye", "forward",
+    "V-hand with fingertips near the eyes moves outward — your sight extending toward what you see."),
+  sign("Watch", "Everyday Actions", "two", "eye", "forward",
+    "V-hand at the eyes turns and pushes forward, aiming your gaze at the thing being watched."),
+  sign("Look", "Everyday Actions", "two", "eye", "arcOut",
+    "V-hand from the eyes arcs outward and down toward whatever you're directing attention to."),
+  sign("Read", "Everyday Actions", "two", "neutral", "nod",
+    "V-hand (your eyes) scans down the upturned non-dominant palm (the page), moving side to side."),
+  sign("Write", "Everyday Actions", "flatO", "neutral", "shake",
+    "Pinched fingers (holding an imaginary pen) scribble across the upturned non-dominant palm."),
+  phrase("Learn", "Everyday Actions", [
+    { shape: "open", location: "neutral", motion: "none", label: "Scoop the page" },
+    { shape: "flatO", location: "forehead", motion: "tap", label: "Into the head" },
+  ], "Open hand scoops up from the non-dominant palm and closes, bringing the information up to the forehead."),
+  sign("Teach", "Everyday Actions", "flatO", "forehead", "forward",
+    "Both flattened-O hands at the temples push forward twice — sending knowledge from your head to theirs."),
+  sign("Sign (ASL)", "Everyday Actions", "one", "neutral", "circle",
+    "Both index fingers point at each other and roll in alternating circles toward the body."),
+  sign("Say", "Everyday Actions", "one", "chin", "circle",
+    "Index finger makes a small forward circle in front of the mouth."),
+  sign("Tell", "Everyday Actions", "one", "chin", "forward",
+    "Index finger starts under the chin, palm in, and arcs out toward the listener."),
+  sign("Ask", "Everyday Actions", "flat", "neutral", "forward",
+    "Flat hand, palm out, bends at the knuckles as it moves toward the person being asked — a polite little bow."),
+  sign("Think", "Everyday Actions", "one", "forehead", "tap",
+    "Index fingertip touches or circles at the side of the forehead."),
+  sign("Remember", "Everyday Actions", "thumbUp", "forehead", "down",
+    "Thumb of the A-hand touches the forehead, then drops down to land on the other thumb — locking the thought in."),
+  phrase("Forget", "Everyday Actions", [
+    { shape: "open", location: "forehead", motion: "none", label: "Wipe across" },
+    { shape: "thumbFist", location: "side", motion: "none", label: "Close away" },
+  ], "Open hand wipes across the forehead and closes into an A-hand at the side — the memory wiped away."),
+  sign("Feel", "Everyday Actions", "open", "chest", "up",
+    "Open hand with the middle finger slightly extended brushes up the chest — emotions rising."),
+  sign("Live", "Everyday Actions", "thumbUp", "stomach", "up",
+    "Both A-hands (or L-hands), thumbs up, slide up the front of the body — life flowing upward."),
+  sign("Buy", "Everyday Actions", "flatO", "neutral", "forward",
+    "Flattened-O (money) sits in the upturned palm, then moves forward — handing money over."),
+  sign("Wait", "Everyday Actions", "open", "neutral", "wiggle",
+    "Both open hands, palms up, fingers wiggling — idling while you wait."),
+  sign("Walk", "Everyday Actions", "flat", "neutral", "updown",
+    "Both flat hands, palms down, alternate forward like footsteps."),
+  sign("Run", "Everyday Actions", "L", "neutral", "forward",
+    "Both L-hands hook together, thumb to index, and dart forward as the index fingers flick."),
+  sign("Sit", "Everyday Actions", "two", "neutral", "down",
+    "Bent U-hand (the legs) sits down onto the other U-hand (the chair)."),
+  sign("Stand", "Everyday Actions", "two", "neutral", "none",
+    "V-hand fingertips (the legs) stand upright on the flat non-dominant palm."),
+  sign("Drive", "Everyday Actions", "fist", "neutral", "updown",
+    "Both S-hands grip an imaginary steering wheel and steer."),
+  sign("Cook", "Everyday Actions", "flat", "neutral", "twist",
+    "Flat hand flips over on the non-dominant palm, like flipping a pancake."),
+  sign("Clean", "Everyday Actions", "flat", "neutral", "shake",
+    "Flat dominant palm wipes across the upturned non-dominant palm, brushing it clean."),
+  sign("Wash", "Everyday Actions", "fist", "neutral", "circle",
+    "A-hand fist rubs in circles against the other fist or palm, like scrubbing."),
+  sign("Finish", "Everyday Actions", "open", "neutral", "twist",
+    "Both open 5-hands, palms in, flip briskly outward to palms-out — all done."),
+  sign("Start", "Everyday Actions", "one", "neutral", "twist",
+    "Index finger inserted between the fingers of the other hand twists, like turning a key in the ignition."),
+  sign("Try", "Everyday Actions", "thumbFist", "neutral", "forward",
+    "Both A-hand (or T-hand) fists push forward with effort, palms facing each other."),
+  sign("Can", "Everyday Actions", "fist", "neutral", "down",
+    "Both S-hand fists move firmly downward together — capability, strength."),
+  sign("Meet", "Everyday Actions", "one", "neutral", "tap",
+    "Both upright index-finger hands move toward each other until they touch — two people coming together."),
+  sign("Call (phone)", "Everyday Actions", "Y", "cheek", "none",
+    "Y-hand held to the side of the head, thumb at the ear and pinky at the mouth — the classic phone shape."),
+];
+
+const feelings: VocabItem[] = [
+  sign("Happy", "Feelings", "flat", "chest", "up",
+    "Flat hand brushes upward on the chest in cheerful repeated circles."),
+  phrase("Sad", "Feelings", [
+    { shape: "open", location: "eye", motion: "none", label: "Hands at face" },
+    { shape: "open", location: "chin", motion: "down", label: "Draw down" },
+  ], "Both open hands, palms in, slide down in front of the face — the face falling."),
+  sign("Angry", "Feelings", "claw", "stomach", "up",
+    "Claw hand at the stomach pulls sharply upward toward the chest — anger boiling up."),
+  sign("Excited", "Feelings", "open", "chest", "updown",
+    "Both open hands with middle fingers slightly in alternate brushing up the chest quickly — energy bubbling."),
+  sign("Tired", "Feelings", "claw", "chest", "down",
+    "Bent-hand fingertips on the chest rotate downward, shoulders slumping — energy draining."),
+  sign("Scared", "Feelings", "open", "chest", "shake",
+    "Both fists spring open into shaking 5-hands in front of the chest — startled fear."),
+  phrase("Surprised", "Feelings", [
+    { shape: "flatO", location: "eye", motion: "none", label: "Pinched at eyes" },
+    { shape: "L", location: "eye", motion: "none", label: "Flick open" },
+  ], "Pinched fingers at the temples flick open into L-hands — eyes popping wide."),
+  sign("Bored", "Feelings", "one", "nose", "twist",
+    "Index finger touches the side of the nose and twists."),
+  sign("Sick", "Feelings", "open", "forehead", "tap",
+    "Open hand with middle finger bent touches the forehead (and the other the stomach) — illness head to belly."),
+  sign("Hungry", "Feelings", "C", "chest", "down",
+    "C-hand traces down the center of the chest — the path of food to an empty stomach."),
+  sign("Thirsty", "Feelings", "one", "neck", "down",
+    "Index finger traces down the throat."),
+  sign("Hot", "Feelings", "claw", "mouth", "arcOut",
+    "Claw hand at the mouth turns and throws outward quickly — tossing away something burning."),
+  sign("Cold", "Feelings", "fist", "neutral", "shake",
+    "Both S-hand fists held close to the body shiver."),
+  sign("Hurt / Pain", "Feelings", "one", "neutral", "twist",
+    "Both index fingers point at each other and twist in opposite directions near where it hurts."),
+  sign("Fine", "Feelings", "open", "chest", "tap",
+    "Open 5-hand, thumb taps the center of the chest."),
+];
+
+const food: VocabItem[] = [
+  sign("Water", "Food & Drink", "W", "chin", "tap",
+    "W-hand taps the chin with the index-finger side, twice."),
+  sign("Milk", "Food & Drink", "fist", "neutral", "openClose",
+    "Fist squeezes open and closed, like milking a cow."),
+  sign("Coffee", "Food & Drink", "fist", "neutral", "circle",
+    "S-hand fist circles on top of the other fist, like grinding coffee beans."),
+  sign("Tea", "Food & Drink", "F", "neutral", "circle",
+    "F-hand pinches an imaginary tea bag and stirs it in a small circle over the other hand's O-shape cup."),
+  sign("Bread", "Food & Drink", "flat", "neutral", "nod",
+    "Fingertips of the bent hand draw down the back of the other flat hand several times — slicing a loaf."),
+  sign("Apple", "Food & Drink", "hook", "cheek", "twist",
+    "Knuckle of the bent index finger presses into the cheek and twists."),
+  sign("Banana", "Food & Drink", "one", "neutral", "down",
+    "Fingertips 'peel' the upright index finger of the other hand, in downward strokes."),
+  sign("Pizza", "Food & Drink", "bentV", "neutral", "arcDown",
+    "Bent-V hand draws a Z shape in the air — one common version of PIZZA."),
+  sign("Cheese", "Food & Drink", "flat", "neutral", "twist",
+    "Heels of both palms press together and twist back and forth — pressing cheese."),
+  sign("Egg", "Food & Drink", "two", "neutral", "down",
+    "Both H-hands strike together, then drop apart — cracking an egg open."),
+  sign("Meat", "Food & Drink", "flatO", "neutral", "shake",
+    "Thumb and index finger pinch the fleshy side of the other flat hand and wiggle it slightly."),
+  sign("Chicken", "Food & Drink", "flatO", "mouth", "openClose",
+    "Thumb and index open and close in front of the mouth like a beak (BIRD), often followed by a pecking motion."),
+  sign("Fish", "Food & Drink", "flat", "neutral", "shake",
+    "Flat hand swims forward, fluttering side to side like a fish's tail."),
+  sign("Soup", "Food & Drink", "two", "mouth", "arcDown",
+    "H-hand (the spoon) scoops from the other cupped palm up to the mouth, twice."),
+  sign("Cookie", "Food & Drink", "C", "neutral", "twist",
+    "C-hand (the cookie cutter) presses onto the other flat palm and twists."),
+  sign("Candy", "Food & Drink", "one", "cheek", "twist",
+    "Index fingertip on the cheek twists back and forth — a sweet spot."),
+  sign("Fruit", "Food & Drink", "F", "cheek", "twist",
+    "F-hand fingertips on the cheek twist slightly."),
+  sign("Vegetable", "Food & Drink", "two", "cheek", "twist",
+    "V-hand touches the cheek with the index finger and twists to touch with the middle finger."),
+  sign("More", "Food & Drink", "flatO", "neutral", "tap",
+    "Both flattened-O hands tap their fingertips together in front of the body, twice."),
+];
+
+const time: VocabItem[] = [
+  sign("Today", "Time", "open", "neutral", "down",
+    "Both flat hands, palms up, drop down together twice — 'now, this day.'"),
+  sign("Now", "Time", "Y", "neutral", "down",
+    "Both bent (or Y) hands, palms up, drop down together once, firmly."),
+  sign("Tomorrow", "Time", "thumbUp", "cheek", "arcOut",
+    "A-hand thumb on the cheek arcs forward — moving one day into the future."),
+  sign("Yesterday", "Time", "thumbUp", "cheek", "arcDown",
+    "A-hand thumb touches the chin/cheek, then arcs back toward the ear — one day into the past."),
+  sign("Later", "Time", "L", "neutral", "twist",
+    "L-hand, thumb anchored on the other palm, tips forward like the minute hand of a clock advancing."),
+  sign("Time", "Time", "one", "side", "tap",
+    "Bent index finger taps the back of the wrist, where a watch sits."),
+  sign("Day", "Time", "one", "neutral", "arcDown",
+    "With the non-dominant arm flat (the horizon), the dominant arm with index finger up arcs across like the sun crossing the sky."),
+  sign("Week", "Time", "one", "neutral", "forward",
+    "One-hand slides forward across the upturned non-dominant palm — one row of a calendar."),
+  sign("Month", "Time", "one", "neutral", "down",
+    "Index finger slides down the back of the other upright index finger — down one column of the calendar."),
+  sign("Year", "Time", "fist", "neutral", "circle",
+    "One S-hand fist orbits around the other and lands on top — the Earth circling the sun."),
+  sign("Always", "Time", "one", "neutral", "circle",
+    "Index finger pointing up circles continuously — going around forever."),
+  sign("Never", "Time", "flat", "neutral", "arcDown",
+    "Flat hand slices a sharp downward arc through the air — cutting the possibility off."),
+  sign("Sometimes", "Time", "one", "neutral", "circle",
+    "Index finger rises off the other palm in slow, deliberate repeated circles — every once in a while."),
+  sign("Afternoon", "Time", "flat", "neutral", "down",
+    "Forearm angled down over the flat non-dominant arm — the sun partway down the sky."),
+];
+
+const places: VocabItem[] = [
+  sign("Home", "Places", "flatO", "cheek", "tap",
+    "Flattened-O touches the side of the chin, then the cheek — where you eat and where you sleep."),
+  sign("School", "Places", "flat", "neutral", "tap",
+    "Flat hands clap together twice, like a teacher calling for attention."),
+  sign("Store", "Places", "flatO", "neutral", "shake",
+    "Both flattened-O hands, pointing down, swing outward from the wrists twice."),
+  sign("Bathroom", "Places", "fist", "neutral", "shake",
+    "T-hand (thumb between index and middle fingers) shakes side to side."),
+  sign("Hospital", "Places", "two", "side", "tap",
+    "H-hand fingertips draw a small cross on the upper arm/shoulder."),
+  sign("Church", "Places", "C", "neutral", "tap",
+    "C-hand taps twice on the back of the other fist — a church on its rock."),
+  sign("City", "Places", "flat", "neutral", "twist",
+    "Fingertips of both flat hands meet like a rooftop, twisting and tapping repeatedly — many roofs, a town."),
+  sign("Outside", "Places", "flatO", "neutral", "arcOut",
+    "Open claw closes into a flattened-O as it pulls up and out — moving out of an enclosed space."),
+  sign("Inside", "Places", "flatO", "neutral", "down",
+    "Flattened-O hand dips into the other hand's C-shape opening, twice."),
+  sign("Street", "Places", "flat", "neutral", "forward",
+    "Both flat hands, palms facing each other, glide forward in parallel — the sides of a road."),
+];
+
+const descriptors: VocabItem[] = [
+  sign("Big", "Describing Words", "L", "neutral", "arcOut",
+    "Both bent-L hands start together and spread wide apart."),
+  sign("Small", "Describing Words", "flat", "neutral", "tap",
+    "Flat hands, palms facing, pat inward toward each other — squeezing to tiny."),
+  sign("Bad", "Describing Words", "flat", "chin", "down",
+    "Flat hand touches the chin, then flips over and slaps down — GOOD turned away."),
+  sign("New", "Describing Words", "flat", "neutral", "arcDown",
+    "Back of the curved dominant hand scoops across the upturned non-dominant palm — turning fresh soil."),
+  sign("Old", "Describing Words", "fist", "chin", "down",
+    "C-to-S hand at the chin draws down — the long beard of age."),
+  sign("Fast", "Describing Words", "one", "neutral", "arcOut",
+    "Both index fingers (or L-hands) flick back sharply, like releasing a slingshot."),
+  sign("Slow", "Describing Words", "flat", "neutral", "up",
+    "Flat hand draws slowly up the back of the other hand and forearm."),
+  sign("Easy", "Describing Words", "flat", "neutral", "up",
+    "Bent fingertips brush repeatedly upward off the back of the other hand's fingers — no resistance."),
+  sign("Hard", "Describing Words", "bentV", "neutral", "tap",
+    "Bent-V knuckles strike down onto the back of the other fist — hitting something solid."),
+  phrase("Beautiful", "Describing Words", [
+    { shape: "open", location: "eye", motion: "circle", label: "Circle the face" },
+    { shape: "flatO", location: "chin", motion: "none", label: "Close at chin" },
+  ], "Open 5-hand circles the face and gathers into a flattened-O at the chin, then blooms open — the whole face is lovely."),
+  sign("Same", "Describing Words", "Y", "neutral", "shake",
+    "Y-hand moves side to side between the two things being compared."),
+  sign("Different", "Describing Words", "one", "neutral", "arcOut",
+    "Crossed index fingers pull apart outward, twice — not the same."),
+  sign("Again", "Describing Words", "claw", "neutral", "arcDown",
+    "Bent hand flips over and lands fingertips-first into the upturned non-dominant palm."),
+  sign("All", "Describing Words", "open", "neutral", "circle",
+    "Open hand sweeps a full circle and closes into the other palm — everything gathered in."),
+  sign("Some", "Describing Words", "flat", "neutral", "down",
+    "The little-finger edge of the curved hand draws a line across the upturned palm — cutting off a portion."),
+  sign("With", "Describing Words", "thumbFist", "neutral", "tap",
+    "Both A-hands come together, knuckles touching — together, side by side."),
+];
+
+const colors: VocabItem[] = [
+  sign("Red", "Colors", "one", "mouth", "down",
+    "Index finger brushes down over the lips (their red color), once or twice."),
+  sign("Orange (color)", "Colors", "fist", "chin", "openClose",
+    "C-hand squeezes into an S at the chin, like squeezing an orange."),
+  sign("Yellow", "Colors", "Y", "neutral", "twist",
+    "Y-hand shakes/twists at the wrist in neutral space."),
+  sign("Green", "Colors", "L", "neutral", "twist",
+    "G-hand shakes/twists at the wrist."),
+  sign("Blue", "Colors", "flat", "neutral", "twist",
+    "B-hand shakes/twists at the wrist."),
+  sign("Purple", "Colors", "two", "neutral", "twist",
+    "P-hand shakes/twists at the wrist."),
+  sign("Pink", "Colors", "two", "mouth", "down",
+    "P-hand's middle finger brushes down over the lips, twice."),
+  sign("Black", "Colors", "one", "forehead", "arcOut",
+    "Index finger draws sideways across the forehead — a dark eyebrow line."),
+  phrase("White", "Colors", [
+    { shape: "open", location: "chest", motion: "none", label: "Open on chest" },
+    { shape: "flatO", location: "neutral", motion: "forward", label: "Pull out closed" },
+  ], "Open 5-hand on the chest pulls away, closing into a flattened-O — plucking at a white shirt."),
+  sign("Brown", "Colors", "flat", "cheek", "down",
+    "B-hand slides down the side of the cheek."),
+  sign("Color", "Colors", "open", "chin", "wiggle",
+    "Open hand at the chin, fingers wiggling — the flutter of many colors."),
+];
+
+const household: VocabItem[] = [
+  sign("House", "Around the House", "flat", "neutral", "arcDown",
+    "Flat hands form a roof peak, then separate and drop straight down — roof, then walls."),
+  sign("Car", "Around the House", "fist", "neutral", "updown",
+    "Both S-hands grip and turn an imaginary steering wheel."),
+  sign("Phone", "Around the House", "Y", "cheek", "none",
+    "Y-hand held to the ear and mouth like a telephone receiver."),
+  sign("Computer", "Around the House", "C", "neutral", "arcOut",
+    "C-hand arcs up along the non-dominant forearm, twice."),
+  sign("Book", "Around the House", "flat", "neutral", "twist",
+    "Palms together, then they open like a book's covers, keeping the pinky edges touching."),
+  sign("Money", "Around the House", "flatO", "neutral", "tap",
+    "Flattened-O (a wad of bills) taps down onto the upturned palm, twice."),
+  sign("Bed", "Around the House", "flat", "cheek", "none",
+    "Flat hand rests against the tilted cheek — head on a pillow."),
+  sign("Chair", "Around the House", "two", "neutral", "tap",
+    "Bent U-hand (the legs) taps down twice onto the other U-hand (the seat)."),
+  sign("Table", "Around the House", "flat", "neutral", "tap",
+    "Flat forearm/hand pats down on top of the other flat forearm — a flat surface."),
+  sign("Door", "Around the House", "flat", "neutral", "twist",
+    "Both B-hands together, palms out; the dominant one swings open and shut like a door on hinges."),
+  sign("Window", "Around the House", "flat", "neutral", "up",
+    "Both flat hands stacked palm-facing; the top one lifts up like a window opening."),
+  sign("Clothes", "Around the House", "open", "chest", "down",
+    "Both open 5-hands brush down the chest twice — fabric on your body."),
+  sign("Shoes", "Around the House", "fist", "neutral", "tap",
+    "Both S-hand fists tap together side by side, twice — a pair of shoes."),
+];
+
+const nature: VocabItem[] = [
+  sign("Sun", "Nature & Animals", "one", "forehead", "circle",
+    "Index finger draws a circle toward the sky, then the hand opens, rays shining down."),
+  sign("Rain", "Nature & Animals", "claw", "neutral", "down",
+    "Both claw hands drop downward in repeated short falls — raindrops coming down."),
+  sign("Snow", "Nature & Animals", "open", "neutral", "wiggle",
+    "Both open hands drift downward with fingers fluttering — snowflakes falling gently."),
+  sign("Wind", "Nature & Animals", "open", "neutral", "shake",
+    "Both open 5-hands sweep gracefully side to side together — air in motion."),
+  sign("Tree", "Nature & Animals", "open", "side", "twist",
+    "Forearm upright (the trunk) with the open 5-hand twisting — branches rustling; the elbow rests on the other hand."),
+  sign("Flower", "Nature & Animals", "flatO", "nose", "tap",
+    "Flattened-O fingertips touch under one nostril, then the other — smelling a blossom."),
+  sign("Dog", "Nature & Animals", "flat", "low", "tap",
+    "Flat hand pats the thigh (often followed by a finger snap) — calling a dog."),
+  sign("Cat", "Nature & Animals", "F", "cheek", "arcOut",
+    "F-hand pinches at the cheek and strokes outward — a cat's whiskers."),
+  sign("Bird", "Nature & Animals", "flatO", "mouth", "openClose",
+    "Index finger and thumb open and close in front of the mouth — a beak chirping."),
+  sign("Fire", "Nature & Animals", "open", "neutral", "wiggle",
+    "Both open hands flicker upward with wiggling fingers — flames rising."),
+];
+
+const numbers: VocabItem[] = [
+  sign("One", "Numbers", [0.7, 0, 1, 1, 1], "neutral", "none", "Index finger up, palm facing in."),
+  sign("Two", "Numbers", [0.8, 0, 0, 1, 1], "neutral", "none", "Index and middle fingers up, palm in."),
+  sign("Three", "Numbers", [0, 0, 0, 1, 1], "neutral", "none", "Thumb, index, and middle fingers up — note: not the same as a hearing person's 'three.'"),
+  sign("Four", "Numbers", [0.9, 0, 0, 0, 0], "neutral", "none", "Four fingers up, thumb tucked across the palm."),
+  sign("Five", "Numbers", [0, 0, 0, 0, 0], "neutral", "none", "All five fingers up and spread, palm in."),
+  sign("Six", "Numbers", [0.4, 0, 0, 0, 0.9], "neutral", "none", "Thumb and pinky touch; index, middle, and ring fingers stand up."),
+  sign("Seven", "Numbers", [0.4, 0, 0, 0.9, 0], "neutral", "none", "Thumb and ring finger touch; the rest stand up."),
+  sign("Eight", "Numbers", [0.4, 0, 0.9, 0, 0], "neutral", "none", "Thumb and middle finger touch; the rest stand up."),
+  sign("Nine", "Numbers", [0.45, 0.6, 0, 0, 0], "neutral", "none", "Thumb and index finger touch (like an F); the rest stand up."),
+  sign("Ten", "Numbers", "thumbUp", "neutral", "shake", "Thumbs-up A-hand shakes side to side."),
+];
+
+const phrases: VocabItem[] = [
+  phrase("I love you", "Phrases", [
+    { shape: "ILY", location: "neutral", motion: "shake", label: "ILY handshape" },
+  ], "Thumb, index finger, and pinky extend while the middle and ring fingers fold down, palm facing out — the ILY handshape, often given a small wave."),
+  phrase("Nice to meet you", "Phrases", [
+    { shape: "flat", location: "neutral", motion: "forward", label: "NICE" },
+    { shape: "one", location: "neutral", motion: "tap", label: "MEET" },
+    { shape: "one", location: "neutral", motion: "forward", label: "YOU" },
+  ], "NICE (flat hand slides across the other palm), then MEET (two upright index fingers come together), then YOU (point at the person)."),
+  phrase("Can you help me?", "Phrases", [
+    { shape: "fist", location: "neutral", motion: "down", label: "CAN" },
+    { shape: "thumbUp", location: "neutral", motion: "up", label: "HELP" },
+    { shape: "one", location: "neutral", motion: "forward", label: "YOU" },
+    { shape: "one", location: "chest", motion: "tap", label: "ME" },
+  ], "CAN (both fists drop firmly), HELP (flat palm lifts the fist), YOU (point out), ME (point to chest), with raised eyebrows for the question."),
+  phrase("Good morning", "Phrases", [
+    { shape: "flat", location: "chin", motion: "arcDown", label: "GOOD" },
+    { shape: "flat", location: "neutral", motion: "up", label: "MORNING" },
+  ], "GOOD (flat hand from the chin drops to the palm), then MORNING (the flat hand rises up behind the horizontal arm like the sun)."),
+  phrase("Good night", "Phrases", [
+    { shape: "flat", location: "chin", motion: "arcDown", label: "GOOD" },
+    { shape: "claw", location: "neutral", motion: "down", label: "NIGHT" },
+  ], "GOOD (flat hand from the chin), then NIGHT (the bent hand sets over the horizontal arm like the sun going down)."),
+  phrase("How are you?", "Phrases", [
+    { shape: "claw", location: "neutral", motion: "twist", label: "HOW" },
+    { shape: "one", location: "neutral", motion: "forward", label: "YOU" },
+  ], "HOW (bent hands roll open to palms up), then YOU (point at the person), with questioning eyebrows."),
+  phrase("What's your name?", "Phrases", [
+    { shape: "open", location: "neutral", motion: "shake", label: "WHAT" },
+    { shape: "one", location: "neutral", motion: "forward", label: "YOUR" },
+    { shape: "two", location: "neutral", motion: "tap", label: "NAME" },
+  ], "YOUR (palm pushes toward the person), NAME (both H-hands tap in an X), with questioning eyebrows — commonly glossed YOUR NAME WHAT?"),
+  phrase("See you later", "Phrases", [
+    { shape: "two", location: "eye", motion: "forward", label: "SEE" },
+    { shape: "L", location: "neutral", motion: "twist", label: "LATER" },
+  ], "SEE (V-hand from the eyes moves out), then LATER (L-hand tips forward like a clock hand)."),
+];
+
+export const VOCABULARY: VocabItem[] = [
+  ...greetings,
+  ...family,
+  ...pronouns,
+  ...questions,
+  ...responses,
+  ...actions,
+  ...feelings,
+  ...food,
+  ...time,
+  ...places,
+  ...descriptors,
+  ...colors,
+  ...household,
+  ...nature,
+  ...numbers,
+  ...phrases,
+];
+
+export const CATEGORIES: Category[] = [
+  "Greetings & Politeness",
+  "Family & People",
+  "Pronouns",
+  "Questions",
+  "Responses",
+  "Everyday Actions",
+  "Feelings",
+  "Food & Drink",
+  "Time",
+  "Places",
+  "Describing Words",
+  "Colors",
+  "Around the House",
+  "Nature & Animals",
+  "Numbers",
+  "Phrases",
+];
+
+export function vocabularyByCategory(category: Category): VocabItem[] {
+  return VOCABULARY.filter((item) => item.type === category);
+}
+
+const NORMALIZED_INDEX = new Map<string, VocabItem>();
+for (const item of VOCABULARY) {
+  NORMALIZED_INDEX.set(normalizeWord(item.word), item);
+  // Index alternate word forms, e.g. "I / Me" → "i", "me"
+  for (const alias of item.word.split("/")) {
+    const cleaned = normalizeWord(alias.replace(/\(.*?\)/g, ""));
+    if (cleaned && !NORMALIZED_INDEX.has(cleaned)) NORMALIZED_INDEX.set(cleaned, item);
+  }
+}
+
+export function normalizeWord(input: string): string {
+  return input.trim().toLowerCase().replace(/[?.!,']/g, "").replace(/\s+/g, " ");
+}
+
+export function findVocabSign(input: string): VocabItem | null {
+  return NORMALIZED_INDEX.get(normalizeWord(input)) ?? null;
+}
+
+/** Words the live camera recognizer is scripted to match (distinct single-pose signs). */
+export const CAMERA_SIGN_WORDS = [
+  "Hello",
+  "Please",
+  "Thank you",
+  "Yes",
+  "No",
+  "I love you",
+  "Water",
+  "More",
+  "Eat",
+  "Drink",
+  "Mother",
+  "Father",
+  "Ten",
+  "Fine",
+] as const;

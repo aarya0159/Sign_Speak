@@ -8,13 +8,27 @@
 
 html,
 body {
-  background-color: #fdf6ee;
-  color: #2d1f0e;
+  background-color: #fff6ec;
+  color: #3b2317;
+  min-height: 100%;
+}
+
+/* Soft warm gradient wash behind everything */
+body {
+  background-image:
+    radial-gradient(42rem 42rem at 8% -10%, rgba(255, 214, 178, 0.55), transparent 60%),
+    radial-gradient(36rem 36rem at 105% 15%, rgba(246, 168, 60, 0.18), transparent 60%),
+    radial-gradient(48rem 40rem at 50% 115%, rgba(232, 96, 122, 0.12), transparent 60%);
+  background-attachment: fixed;
+}
+
+::selection {
+  background-color: rgba(233, 111, 76, 0.25);
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: #b49ddf #fdf6ee;
+  scrollbar-color: #f4a97f #fff6ec;
 }
 
 *::-webkit-scrollbar {
@@ -22,6 +36,56 @@ body {
 }
 
 *::-webkit-scrollbar-thumb {
-  background-color: #b49ddf;
+  background-color: #f4a97f;
   border-radius: 999px;
+}
+
+/* Interactive elements ease by default */
+button,
+a,
+input,
+textarea {
+  transition:
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.25s ease,
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    color 0.25s ease,
+    opacity 0.25s ease;
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
+@layer components {
+  .card-warm {
+    @apply rounded-3xl border border-espresso/10 bg-white/60 backdrop-blur-md shadow-warm-sm transition-all duration-300;
+  }
+
+  .card-warm-hover {
+    @apply hover:-translate-y-1 hover:shadow-warm hover:border-coral/30;
+  }
+
+  .btn-sunset {
+    @apply rounded-full bg-gradient-to-r from-coral to-honey text-white font-bold shadow-warm-sm hover:shadow-warm hover:brightness-105;
+  }
+
+  .text-sunset {
+    @apply bg-gradient-to-r from-coral-deep via-coral to-honey bg-clip-text text-transparent;
+  }
+
+  .chip-warm {
+    @apply rounded-full bg-peach px-3 py-1 text-xs font-bold text-coral-deep;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

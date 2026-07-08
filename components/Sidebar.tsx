@@ -25,16 +25,17 @@ interface SidebarProps {
 
 export default function Sidebar({ activeTab, onNavigate, onLogout }: SidebarProps) {
   return (
-    <aside className="sticky top-0 flex h-screen w-64 shrink-0 flex-col justify-between border-r border-espresso/10 bg-white/70 px-4 py-6 backdrop-blur-md">
+    <aside className="sticky top-0 flex h-screen w-64 shrink-0 flex-col justify-between border-r border-espresso/10 bg-white/50 px-4 py-6 backdrop-blur-md">
       <div>
         <div className="mb-8 flex items-center gap-2 px-2">
-          <span className="h-3 w-3 rounded-full bg-purple" aria-hidden="true" />
-          <span className="text-lg font-extrabold tracking-tight text-espresso">
-            SignSpeak AI
-          </span>
+          <span
+            className="h-3.5 w-3.5 rounded-full bg-gradient-to-br from-coral to-honey shadow-warm-sm"
+            aria-hidden="true"
+          />
+          <span className="text-lg font-extrabold tracking-tight text-espresso">SignSpeak AI</span>
         </div>
 
-        <nav className="space-y-1">
+        <nav className="space-y-1.5">
           {NAV_ITEMS.map((item) => {
             const isActive = activeTab === item.key;
             return (
@@ -42,10 +43,10 @@ export default function Sidebar({ activeTab, onNavigate, onLogout }: SidebarProp
                 key={item.key}
                 type="button"
                 onClick={() => onNavigate(item.key)}
-                className={`flex w-full items-center gap-3 rounded-2xl px-3 py-3 text-left text-sm font-bold transition ${
+                className={`flex w-full items-center gap-3 rounded-full px-4 py-3 text-left text-sm font-bold transition-all duration-300 ${
                   isActive
-                    ? "bg-purple-soft text-purple border border-purple/20"
-                    : "text-espresso/70 hover:bg-purple-soft/60 border border-transparent"
+                    ? "bg-gradient-to-r from-peach to-peach/40 text-coral-deep shadow-warm-sm border border-coral/20"
+                    : "border border-transparent text-espresso/70 hover:bg-peach/50 hover:text-coral-deep hover:translate-x-0.5"
                 }`}
               >
                 <span aria-hidden="true">{item.icon}</span>
@@ -59,7 +60,7 @@ export default function Sidebar({ activeTab, onNavigate, onLogout }: SidebarProp
       <button
         type="button"
         onClick={onLogout}
-        className="w-full rounded-2xl border border-red-200 bg-red-50 px-3 py-3 text-sm font-bold text-red-600 transition hover:bg-red-100"
+        className="w-full rounded-full border border-rose/30 bg-rose/10 px-4 py-3 text-sm font-bold text-rose transition hover:bg-rose/20"
       >
         Log Out Account
       </button>

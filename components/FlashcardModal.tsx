@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import HandVisionPanel from "@/components/HandVisionPanel";
+import { framesForItem } from "@/lib/handShapes";
 import { CurriculumModule } from "@/lib/types";
 
 interface FlashcardModalProps {
@@ -51,14 +52,14 @@ export default function FlashcardModal({ module, onClose, onComplete }: Flashcar
 
         <div className="mb-8 h-2 w-full overflow-hidden rounded-full bg-espresso/10">
           <div
-            className="h-full rounded-full bg-purple transition-all duration-300"
+            className="h-full rounded-full bg-coral transition-all duration-300"
             style={{ width: `${progressPercent}%` }}
           />
         </div>
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
           <div className="flex flex-col justify-center space-y-4">
-            <p className="text-sm font-bold uppercase tracking-wide text-purple">
+            <p className="text-sm font-bold uppercase tracking-wide text-coral">
               {currentItem.type}
             </p>
             <h2 className="text-4xl font-extrabold tracking-tight text-espresso">
@@ -74,9 +75,9 @@ export default function FlashcardModal({ module, onClose, onComplete }: Flashcar
           </div>
 
           <HandVisionPanel
-            word={currentItem.word}
+            label={currentItem.word}
+            frames={framesForItem(currentItem)}
             visualCue={currentItem.visualCue}
-            description={currentItem.description}
             index={currentIndex}
             total={total}
           />
@@ -104,7 +105,7 @@ export default function FlashcardModal({ module, onClose, onComplete }: Flashcar
             <button
               type="button"
               onClick={goNext}
-              className="rounded-2xl bg-purple px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:opacity-90"
+              className="rounded-2xl bg-coral px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:opacity-90"
             >
               Next Word →
             </button>
