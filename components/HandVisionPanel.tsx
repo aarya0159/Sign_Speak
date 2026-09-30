@@ -81,6 +81,8 @@ export default function HandVisionPanel({
   const landmarks = isLive
     ? liveLandmarks!.map((p) => ({ x: p.x * VIEW_WIDTH, y: p.y * VIEW_HEIGHT }))
     : sample.points;
+  const secondaryLandmarks = !isLive ? sample.secondaryPoints : undefined;
+  const handCount = secondaryLandmarks ? 2 : 1;
 
   const isTracking = trackingStatus === "active";
 
@@ -123,6 +125,30 @@ export default function HandVisionPanel({
               <circle cx={point.x} cy={point.y} r={i === 0 ? 2.5 : 1.5} fill="#FFE4D0" />
             </g>
           ))}
+
+          {secondaryLandmarks && (
+            <>
+              {BONE_CONNECTIONS.map(([a, b]) => (
+                <line
+                  key={`second-${a}-${b}`}
+                  x1={secondaryLandmarks[a].x}
+                  y1={secondaryLandmarks[a].y}
+                  x2={secondaryLandmarks[b].x}
+                  y2={secondaryLandmarks[b].y}
+                  stroke="#8DE7B8"
+                  strokeWidth={1.5}
+                  strokeLinecap="round"
+                  opacity={0.85}
+                />
+              ))}
+              {secondaryLandmarks.map((point, i) => (
+                <g key={`second-${i}`}>
+                  <circle cx={point.x} cy={point.y} r={i === 0 ? 6 : 4} fill="#1E0F09" stroke="#8DE7B8" strokeWidth={1.5} />
+                  <circle cx={point.x} cy={point.y} r={i === 0 ? 2.5 : 1.5} fill="#E4FFF2" />
+                </g>
+              ))}
+            </>
+          )}
         </svg>
 
         {sample.label && !isLive && (
@@ -141,10 +167,13 @@ export default function HandVisionPanel({
 
       <div className="mt-4 grid grid-cols-2 gap-2 text-[11px] font-mono text-apricot/70">
         <div className="rounded-lg border border-white/5 bg-white/5 px-2 py-1">
-          NODES <span className="text-white">21/21</span>
+          NODES <span className="text-white">{21 * handCount}/{21 * handCount}</span>
         </div>
         <div className="rounded-lg border border-white/5 bg-white/5 px-2 py-1">
-          MODE <span className="text-white">{isLive ? "LIVE CAM" : "POSE STREAM"}</span>
+          MODE{" "}
+          <span className="text-white">
+            {isLive ? "LIVE CAM" : "POSE STREAM"} · {handCount === 2 ? "2 hands" : "1 hand"}
+          </span>
         </div>
         <div className="col-span-2 truncate rounded-lg border border-white/5 bg-white/5 px-2 py-1">
           SIGN <span className="text-white">{label}</span>

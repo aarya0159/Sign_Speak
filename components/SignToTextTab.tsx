@@ -284,7 +284,7 @@ export default function SignToTextTab() {
             Gloss-free pipeline: raw MediaPipe landmark sequences stream into a per-frame hypothesis
             array, and a temporal decoder integrates the evidence into a continuously evolving
             sentence — signs are never frozen into isolated flashcard tokens. The current scorer is
-            geometric (handshape + location + motion over 14 signs and 26 letters); it&apos;s
+            geometric (handshape + location + motion over 21 signs and 26 letters); it&apos;s
             architected so a trained sequence encoder (ViT + CTC) can drop in as the scorer without
             changing the decoder or this UI.
           </p>

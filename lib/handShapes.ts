@@ -102,11 +102,28 @@ export type MotionKey =
   | "openClose"
   | "updown";
 
+/**
+ * Non-dominant hand for two-handed signs. `mirrorX` makes it track the
+ * dominant hand's motion as a horizontal mirror image (signs where both
+ * hands move apart/together/around symmetrically, e.g. FAMILY, HOUSE).
+ * Without `mirrorX`, the second hand plays its own `motion` independently —
+ * "none" for a static support hand the dominant hand acts on (e.g. WORK,
+ * STOP, TABLE), or a matching motion for hands that move the same way in
+ * parallel (e.g. GO, RAIN).
+ */
+export interface SecondHandStep {
+  shape: HandShapeKey | Curls;
+  location: LocationKey;
+  motion?: MotionKey;
+  mirrorX?: boolean;
+}
+
 export interface SignStep {
   shape: HandShapeKey | Curls;
   location: LocationKey;
   motion: MotionKey;
   label?: string;
+  secondHand?: SecondHandStep;
 }
 
 export interface AnimFrame {
@@ -114,7 +131,16 @@ export interface AnimFrame {
   location: { x: number; y: number; scale: number };
   motion: MotionKey;
   label: string;
+  secondHand?: {
+    curls: Curls;
+    location: { x: number; y: number; scale: number };
+    motion: MotionKey;
+    mirrorX: boolean;
+  };
 }
+
+/** How far apart to nudge two hands so they don't render on top of each other. */
+const SECOND_HAND_OFFSET_X = 15;
 
 const HAND_CENTROID: Point = BASE_LANDMARKS.reduce(
   (sum, point) => ({
@@ -129,11 +155,24 @@ function curlsOf(shape: HandShapeKey | Curls): Curls {
 }
 
 export function stepToFrame(step: SignStep, fallbackLabel: string): AnimFrame {
+  const label = step.label ?? fallbackLabel;
+  if (!step.secondHand) {
+    return { curls: curlsOf(step.shape), location: LOCATIONS[step.location], motion: step.motion, label };
+  }
+
+  const primaryLocation = LOCATIONS[step.location];
+  const secondaryLocation = LOCATIONS[step.secondHand.location];
   return {
     curls: curlsOf(step.shape),
-    location: LOCATIONS[step.location],
+    location: { ...primaryLocation, x: primaryLocation.x - SECOND_HAND_OFFSET_X },
     motion: step.motion,
-    label: step.label ?? fallbackLabel,
+    label,
+    secondHand: {
+      curls: curlsOf(step.secondHand.shape),
+      location: { ...secondaryLocation, x: secondaryLocation.x + SECOND_HAND_OFFSET_X },
+      motion: step.secondHand.motion ?? "none",
+      mirrorX: step.secondHand.mirrorX ?? false,
+    },
   };
 }
 
@@ -155,15 +194,15 @@ export function framesForItem(item: VocabItem): AnimFrame[] {
   return [{ curls: HAND_SHAPES.open, location: LOCATIONS.neutral, motion: "none", label: item.word }];
 }
 
-/** Builds the 21-point skeleton for a curl profile, placed at a location. `t` drives per-finger motion like wiggle. */
-export function poseForFrame(frame: AnimFrame, t: number): Point[] {
-  let curls: number[] = [...frame.curls];
+/** Builds the un-placed 21-point skeleton for a curl profile. `t` drives per-finger motion like wiggle. */
+function shapedLandmarks(curls: Curls, motion: MotionKey, t: number): Point[] {
+  let adjusted: number[] = [...curls];
 
-  if (frame.motion === "wiggle") {
-    curls = curls.map((curl, i) => clamp01(curl + 0.14 * Math.sin(2 * Math.PI * (t * 3 + i * 0.22))));
-  } else if (frame.motion === "openClose") {
+  if (motion === "wiggle") {
+    adjusted = adjusted.map((curl, i) => clamp01(curl + 0.14 * Math.sin(2 * Math.PI * (t * 3 + i * 0.22))));
+  } else if (motion === "openClose") {
     const blend = 0.5 + 0.5 * Math.sin(2 * Math.PI * t * 1.5);
-    curls = curls.map((curl, i) => curl + (HAND_SHAPES.flatO[i] - curl) * blend * 0.8);
+    adjusted = adjusted.map((curl, i) => curl + (HAND_SHAPES.flatO[i] - curl) * blend * 0.8);
   }
 
   const landmarks = BASE_LANDMARKS.map((point) => ({ ...point }));
@@ -171,18 +210,57 @@ export function poseForFrame(frame: AnimFrame, t: number): Point[] {
     const { mcp, joints } = FINGER_JOINTS[name];
     const anchor = landmarks[mcp];
     const [pipIdx, dipIdx, tipIdx] = joints;
-    const curl = curls[fingerIndex];
+    const curl = adjusted[fingerIndex];
     landmarks[pipIdx] = lerp(BASE_LANDMARKS[pipIdx], anchor, curl * 0.35);
     landmarks[dipIdx] = lerp(BASE_LANDMARKS[dipIdx], anchor, curl * 0.6);
     landmarks[tipIdx] = lerp(BASE_LANDMARKS[tipIdx], anchor, curl * 0.8);
   });
 
-  const placed = landmarks.map((point) => ({
-    x: frame.location.x + (point.x - HAND_CENTROID.x) * frame.location.scale,
-    y: frame.location.y + (point.y - HAND_CENTROID.y) * frame.location.scale,
-  }));
+  return landmarks;
+}
 
-  return applyMotion(placed, frame.motion, t);
+function placeAtLocation(landmarks: Point[], location: { x: number; y: number; scale: number }): Point[] {
+  return landmarks.map((point) => ({
+    x: location.x + (point.x - HAND_CENTROID.x) * location.scale,
+    y: location.y + (point.y - HAND_CENTROID.y) * location.scale,
+  }));
+}
+
+function handPose(
+  curls: Curls,
+  location: { x: number; y: number; scale: number },
+  motion: MotionKey,
+  t: number,
+): Point[] {
+  const placed = placeAtLocation(shapedLandmarks(curls, motion, t), location);
+  return applyMotion(placed, motion, t);
+}
+
+/** Builds the 21-point skeleton for the dominant hand, placed at its location and animated at time `t`. */
+export function poseForFrame(frame: AnimFrame, t: number): Point[] {
+  return handPose(frame.curls, frame.location, frame.motion, t);
+}
+
+/**
+ * Builds the 21-point skeleton for the non-dominant hand, if this frame uses one.
+ * `mirrorX` signs mirror the dominant hand's on-screen motion (not its curl/finger
+ * animation) horizontally, so symmetric two-handed signs move believably without
+ * needing bespoke motion math per sign.
+ */
+export function secondHandPoseForFrame(frame: AnimFrame, t: number): Point[] | undefined {
+  if (!frame.secondHand) return undefined;
+  const { curls, location, motion, mirrorX } = frame.secondHand;
+
+  if (!mirrorX) return handPose(curls, location, motion, t);
+
+  const basePose = placeAtLocation(shapedLandmarks(curls, motion, t), location);
+  const primaryBase = placeAtLocation(shapedLandmarks(frame.curls, frame.motion, t), frame.location);
+  const primaryMoved = applyMotion(primaryBase, frame.motion, t);
+
+  return basePose.map((point, i) => ({
+    x: point.x - (primaryMoved[i].x - primaryBase[i].x),
+    y: point.y + (primaryMoved[i].y - primaryBase[i].y),
+  }));
 }
 
 function clamp01(value: number): number {
@@ -295,6 +373,8 @@ function blendPoses(a: Point[], b: Point[], t: number): Point[] {
 
 export interface PoseStreamSample {
   points: Point[];
+  /** Non-dominant hand's skeleton, present only while a two-handed sign is playing. */
+  secondaryPoints?: Point[];
   label: string;
   frameIndex: number;
   frameCount: number;
@@ -326,12 +406,18 @@ export function poseStreamAt(frames: AnimFrame[] | undefined, elapsedMs: number)
   const frame = frames[frameIndex];
 
   let points = poseForFrame(frame, frameTime / FRAME_DURATION_MS);
+  let secondaryPoints = secondHandPoseForFrame(frame, frameTime / FRAME_DURATION_MS);
 
   if (frameTime < TRANSITION_MS && frames.length > 1) {
     const prevFrame = frames[(frameIndex - 1 + frames.length) % frames.length];
     const prevPose = poseForFrame(prevFrame, 1);
     points = blendPoses(prevPose, points, frameTime / TRANSITION_MS);
+
+    const prevSecondary = secondHandPoseForFrame(prevFrame, 1);
+    if (secondaryPoints && prevSecondary) {
+      secondaryPoints = blendPoses(prevSecondary, secondaryPoints, frameTime / TRANSITION_MS);
+    }
   }
 
-  return { points, label: frame.label, frameIndex, frameCount: frames.length };
+  return { points, secondaryPoints, label: frame.label, frameIndex, frameCount: frames.length };
 }

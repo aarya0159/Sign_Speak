@@ -1,4 +1,4 @@
-import type { HandShapeKey, MotionKey, LocationKey, SignStep, Curls } from "./handShapes";
+import type { HandShapeKey, MotionKey, LocationKey, SignStep, SecondHandStep, Curls } from "./handShapes";
 import type { VocabItem } from "./types";
 
 /**
@@ -36,13 +36,16 @@ function sign(
   motion: MotionKey,
   description: string,
   visualCue?: string,
+  secondHand?: SecondHandStep,
 ): VocabItem {
   return {
     word,
     type,
     description,
-    visualCue: visualCue ?? `${Array.isArray(shape) ? "custom" : shape} hand · ${location} · ${motion}`,
-    steps: [{ shape, location, motion }],
+    visualCue:
+      visualCue ??
+      `${Array.isArray(shape) ? "custom" : shape} hand · ${location} · ${motion}${secondHand ? " · two hands" : ""}`,
+    steps: [{ shape, location, motion, secondHand }],
   };
 }
 
@@ -99,9 +102,11 @@ const family: VocabItem[] = [
   sign("Baby", "Family & People", "flat", "stomach", "updown",
     "Both arms stack as if cradling an infant and rock gently side to side."),
   sign("Family", "Family & People", "F", "neutral", "circle",
-    "Both F-hands start together, palms out, then circle outward until the pinkies meet, enclosing the 'family circle.'"),
+    "Both F-hands start together, palms out, then circle outward until the pinkies meet, enclosing the 'family circle.'",
+    undefined, { shape: "F", location: "neutral", motion: "circle", mirrorX: true }),
   sign("Friend", "Family & People", "hook", "neutral", "twist",
-    "Hooked index fingers link together, then reverse and link the other way — two lives interlocked."),
+    "Hooked index fingers link together, then reverse and link the other way — two lives interlocked.",
+    undefined, { shape: "hook", location: "neutral", motion: "twist", mirrorX: true }),
   sign("Boy", "Family & People", "flatO", "forehead", "openClose",
     "Flattened-O hand opens and closes at the forehead, like gripping the brim of a cap."),
   sign("Girl", "Family & People", "thumbFist", "cheek", "down",
@@ -114,6 +119,9 @@ const family: VocabItem[] = [
     "Both flattened-O hands move forward from the temples (TEACH), followed by flat hands sliding down the sides of the body (person marker)."),
   sign("People", "Family & People", "F", "neutral", "updown",
     "Both P/F-hands make small alternating downward circles in front of the body."),
+  sign("Interpreter", "Family & People", "hook", "neutral", "circle",
+    "Both bent index-finger hands circle around each other alternately in front of the body — passing meaning from one language into another.",
+    undefined, { shape: "hook", location: "neutral", motion: "circle", mirrorX: true }),
 ];
 
 const pronouns: VocabItem[] = [
@@ -135,7 +143,8 @@ const pronouns: VocabItem[] = [
 
 const questions: VocabItem[] = [
   sign("What", "Questions", "open", "neutral", "shake",
-    "Both open hands, palms up in front of the body, shake slightly side to side with a questioning face."),
+    "Both open hands, palms up in front of the body, shake slightly side to side with a questioning face.",
+    undefined, { shape: "open", location: "neutral", motion: "shake" }),
   sign("Where", "Questions", "one", "neutral", "shake",
     "Index finger pointing up wags quickly side to side, eyebrows squeezed in a question."),
   sign("When", "Questions", "one", "neutral", "circle",
@@ -185,17 +194,23 @@ const actions: VocabItem[] = [
     { shape: "flatO", location: "chin", motion: "down", label: "Draw closed" },
   ], "Open hand in front of the face draws down and closes into a flattened-O near the chin, as the eyes close."),
   sign("Work", "Everyday Actions", "fist", "neutral", "tap",
-    "Both S-hand fists, palms down; the dominant fist taps the back of the non-dominant fist twice."),
+    "Both S-hand fists, palms down; the dominant fist taps the back of the non-dominant fist twice.",
+    undefined, { shape: "fist", location: "neutral", motion: "none" }),
   sign("Play", "Everyday Actions", "Y", "neutral", "twist",
-    "Both Y-hands twist quickly back and forth from the wrists."),
+    "Both Y-hands twist quickly back and forth from the wrists.",
+    undefined, { shape: "Y", location: "neutral", motion: "twist" }),
   sign("Help", "Everyday Actions", "thumbUp", "neutral", "up",
-    "A-hand with thumb up sits on the flat non-dominant palm; both rise together — the palm boosting the fist up."),
+    "A-hand with thumb up sits on the flat non-dominant palm; both rise together — the palm boosting the fist up.",
+    undefined, { shape: "flat", location: "neutral", motion: "up" }),
   sign("Stop", "Everyday Actions", "flat", "neutral", "down",
-    "Flat dominant hand chops down onto the upturned non-dominant palm, like a gavel."),
+    "Flat dominant hand chops down onto the upturned non-dominant palm, like a gavel.",
+    undefined, { shape: "open", location: "neutral", motion: "none" }),
   sign("Go", "Everyday Actions", "one", "neutral", "forward",
-    "Both index fingers point and move forward in the direction of travel."),
+    "Both index fingers point and move forward in the direction of travel.",
+    undefined, { shape: "one", location: "neutral", motion: "forward" }),
   sign("Come", "Everyday Actions", "one", "neutral", "arcDown",
-    "Both index fingers, palms up, curl and beckon in toward the body."),
+    "Both index fingers, palms up, curl and beckon in toward the body.",
+    undefined, { shape: "one", location: "neutral", motion: "arcDown" }),
   sign("Want", "Everyday Actions", "claw", "neutral", "forward",
     "Both claw hands, palms up, pull in toward the body — grabbing what you want."),
   sign("Need", "Everyday Actions", "hook", "neutral", "down",
@@ -261,15 +276,19 @@ const actions: VocabItem[] = [
   sign("Run", "Everyday Actions", "L", "neutral", "forward",
     "Both L-hands hook together, thumb to index, and dart forward as the index fingers flick."),
   sign("Sit", "Everyday Actions", "two", "neutral", "down",
-    "Bent U-hand (the legs) sits down onto the other U-hand (the chair)."),
+    "Bent U-hand (the legs) sits down onto the other U-hand (the chair).",
+    undefined, { shape: "two", location: "neutral", motion: "none" }),
   sign("Stand", "Everyday Actions", "two", "neutral", "none",
-    "V-hand fingertips (the legs) stand upright on the flat non-dominant palm."),
+    "V-hand fingertips (the legs) stand upright on the flat non-dominant palm.",
+    undefined, { shape: "flat", location: "neutral", motion: "none" }),
   sign("Drive", "Everyday Actions", "fist", "neutral", "updown",
-    "Both S-hands grip an imaginary steering wheel and steer."),
+    "Both S-hands grip an imaginary steering wheel and steer.",
+    undefined, { shape: "fist", location: "neutral", motion: "updown" }),
   sign("Cook", "Everyday Actions", "flat", "neutral", "twist",
     "Flat hand flips over on the non-dominant palm, like flipping a pancake."),
   sign("Clean", "Everyday Actions", "flat", "neutral", "shake",
-    "Flat dominant palm wipes across the upturned non-dominant palm, brushing it clean."),
+    "Flat dominant palm wipes across the upturned non-dominant palm, brushing it clean.",
+    undefined, { shape: "open", location: "neutral", motion: "none" }),
   sign("Wash", "Everyday Actions", "fist", "neutral", "circle",
     "A-hand fist rubs in circles against the other fist or palm, like scrubbing."),
   sign("Finish", "Everyday Actions", "open", "neutral", "twist",
@@ -281,9 +300,24 @@ const actions: VocabItem[] = [
   sign("Can", "Everyday Actions", "fist", "neutral", "down",
     "Both S-hand fists move firmly downward together — capability, strength."),
   sign("Meet", "Everyday Actions", "one", "neutral", "tap",
-    "Both upright index-finger hands move toward each other until they touch — two people coming together."),
+    "Both upright index-finger hands move toward each other until they touch — two people coming together.",
+    undefined, { shape: "one", location: "neutral", motion: "tap", mirrorX: true }),
   sign("Call (phone)", "Everyday Actions", "Y", "cheek", "none",
     "Y-hand held to the side of the head, thumb at the ear and pinky at the mouth — the classic phone shape."),
+  sign("Camera", "Everyday Actions", "C", "eye", "tap",
+    "C-hand is held up near the eye and the index finger flicks down like pressing a shutter, snapping a photo."),
+  sign("Dance", "Everyday Actions", "two", "neutral", "shake",
+    "V-hand 'legs' swing back and forth over the upturned non-dominant palm, like dancing feet on a floor.",
+    undefined, { shape: "open", location: "neutral", motion: "none" }),
+  sign("Draw", "Everyday Actions", "pinky", "neutral", "wiggle",
+    "The pinky-side of the dominant hand zigzags down the upturned non-dominant palm, sketching a line.",
+    undefined, { shape: "open", location: "neutral", motion: "none" }),
+  sign("Swim", "Everyday Actions", "flat", "stomach", "forward",
+    "Both flat hands sweep forward together in alternating strokes, palms down, like swimming through water.",
+    undefined, { shape: "flat", location: "stomach", motion: "forward" }),
+  sign("Music", "Everyday Actions", "open", "side", "shake",
+    "Open dominant hand waves rhythmically back and forth above the flat non-dominant forearm, as if conducting a tune.",
+    undefined, { shape: "flat", location: "side", motion: "none" }),
 ];
 
 const feelings: VocabItem[] = [
@@ -321,6 +355,11 @@ const feelings: VocabItem[] = [
     "Both index fingers point at each other and twist in opposite directions near where it hurts."),
   sign("Fine", "Feelings", "open", "chest", "tap",
     "Open 5-hand, thumb taps the center of the chest."),
+  sign("Congratulations", "Feelings", "fist", "neutral", "updown",
+    "Both hands clasp together in front of the body and shake up and down together, like a warm handshake with yourself.",
+    undefined, { shape: "fist", location: "neutral", motion: "updown" }),
+  sign("Proud", "Feelings", "thumbUp", "stomach", "up",
+    "Thumb of the A-hand slides up the center of the chest — standing a little taller."),
 ];
 
 const food: VocabItem[] = [
@@ -343,7 +382,8 @@ const food: VocabItem[] = [
   sign("Cheese", "Food & Drink", "flat", "neutral", "twist",
     "Heels of both palms press together and twist back and forth — pressing cheese."),
   sign("Egg", "Food & Drink", "two", "neutral", "down",
-    "Both H-hands strike together, then drop apart — cracking an egg open."),
+    "Both H-hands strike together, then drop apart — cracking an egg open.",
+    undefined, { shape: "two", location: "neutral", motion: "down", mirrorX: true }),
   sign("Meat", "Food & Drink", "flatO", "neutral", "shake",
     "Thumb and index finger pinch the fleshy side of the other flat hand and wiggle it slightly."),
   sign("Chicken", "Food & Drink", "flatO", "mouth", "openClose",
@@ -361,7 +401,8 @@ const food: VocabItem[] = [
   sign("Vegetable", "Food & Drink", "two", "cheek", "twist",
     "V-hand touches the cheek with the index finger and twists to touch with the middle finger."),
   sign("More", "Food & Drink", "flatO", "neutral", "tap",
-    "Both flattened-O hands tap their fingertips together in front of the body, twice."),
+    "Both flattened-O hands tap their fingertips together in front of the body, twice.",
+    undefined, { shape: "flatO", location: "neutral", motion: "tap", mirrorX: true }),
 ];
 
 const time: VocabItem[] = [
@@ -416,6 +457,12 @@ const places: VocabItem[] = [
     "Flattened-O hand dips into the other hand's C-shape opening, twice."),
   sign("Street", "Places", "flat", "neutral", "forward",
     "Both flat hands, palms facing each other, glide forward in parallel — the sides of a road."),
+  sign("Movie", "Places", "open", "neutral", "wiggle",
+    "An open 5-hand shakes/wiggles in front of a stationary open non-dominant 5-hand, like film flickering on a screen.",
+    undefined, { shape: "open", location: "neutral", motion: "none" }),
+  sign("Bicycle", "Places", "fist", "neutral", "circle",
+    "Both S-hand fists circle forward alternately in front of the body, like pedaling a bike.",
+    undefined, { shape: "fist", location: "neutral", motion: "circle" }),
 ];
 
 const descriptors: VocabItem[] = [
@@ -453,6 +500,18 @@ const descriptors: VocabItem[] = [
     "The little-finger edge of the curved hand draws a line across the upturned palm — cutting off a portion."),
   sign("With", "Describing Words", "thumbFist", "neutral", "tap",
     "Both A-hands come together, knuckles touching — together, side by side."),
+  phrase("Deaf", "Describing Words", [
+    { shape: "one", location: "ear", motion: "tap", label: "Touch ear" },
+    { shape: "one", location: "chin", motion: "tap", label: "Touch chin" },
+  ], "Index finger touches near the ear, then moves down to touch near the chin — connecting hearing and speech."),
+  sign("Hearing", "Describing Words", "one", "mouth", "circle",
+    "Index finger makes small forward circles in front of the mouth, indicating speech and sound."),
+  sign("Busy", "Describing Words", "flat", "neutral", "shake",
+    "Both flat 'B' hands cross at the wrist; the dominant hand brushes back and forth across the back of the other — hands full of work.",
+    undefined, { shape: "flat", location: "neutral", motion: "none" }),
+  sign("Free", "Describing Words", "flat", "chest", "arcOut",
+    "Both crossed flat hands at the wrists spring open and outward to the sides — unshackled and available.",
+    undefined, { shape: "flat", location: "chest", motion: "arcOut", mirrorX: true }),
 ];
 
 const colors: VocabItem[] = [
@@ -484,9 +543,11 @@ const colors: VocabItem[] = [
 
 const household: VocabItem[] = [
   sign("House", "Around the House", "flat", "neutral", "arcDown",
-    "Flat hands form a roof peak, then separate and drop straight down — roof, then walls."),
+    "Flat hands form a roof peak, then separate and drop straight down — roof, then walls.",
+    undefined, { shape: "flat", location: "neutral", motion: "arcDown", mirrorX: true }),
   sign("Car", "Around the House", "fist", "neutral", "updown",
-    "Both S-hands grip and turn an imaginary steering wheel."),
+    "Both S-hands grip and turn an imaginary steering wheel.",
+    undefined, { shape: "fist", location: "neutral", motion: "updown" }),
   sign("Phone", "Around the House", "Y", "cheek", "none",
     "Y-hand held to the ear and mouth like a telephone receiver."),
   sign("Computer", "Around the House", "C", "neutral", "arcOut",
@@ -498,13 +559,17 @@ const household: VocabItem[] = [
   sign("Bed", "Around the House", "flat", "cheek", "none",
     "Flat hand rests against the tilted cheek — head on a pillow."),
   sign("Chair", "Around the House", "two", "neutral", "tap",
-    "Bent U-hand (the legs) taps down twice onto the other U-hand (the seat)."),
+    "Bent U-hand (the legs) taps down twice onto the other U-hand (the seat).",
+    undefined, { shape: "two", location: "neutral", motion: "none" }),
   sign("Table", "Around the House", "flat", "neutral", "tap",
-    "Flat forearm/hand pats down on top of the other flat forearm — a flat surface."),
+    "Flat forearm/hand pats down on top of the other flat forearm — a flat surface.",
+    undefined, { shape: "flat", location: "neutral", motion: "none" }),
   sign("Door", "Around the House", "flat", "neutral", "twist",
-    "Both B-hands together, palms out; the dominant one swings open and shut like a door on hinges."),
+    "Both B-hands together, palms out; the dominant one swings open and shut like a door on hinges.",
+    undefined, { shape: "flat", location: "neutral", motion: "none" }),
   sign("Window", "Around the House", "flat", "neutral", "up",
-    "Both flat hands stacked palm-facing; the top one lifts up like a window opening."),
+    "Both flat hands stacked palm-facing; the top one lifts up like a window opening.",
+    undefined, { shape: "flat", location: "neutral", motion: "none" }),
   sign("Clothes", "Around the House", "open", "chest", "down",
     "Both open 5-hands brush down the chest twice — fabric on your body."),
   sign("Shoes", "Around the House", "fist", "neutral", "tap",
@@ -532,6 +597,9 @@ const nature: VocabItem[] = [
     "Index finger and thumb open and close in front of the mouth — a beak chirping."),
   sign("Fire", "Nature & Animals", "open", "neutral", "wiggle",
     "Both open hands flicker upward with wiggling fingers — flames rising."),
+  sign("Weather", "Nature & Animals", "flat", "neutral", "twist",
+    "Both flat 'W' hands, palms facing, rotate back and forth alternately in front of the face.",
+    undefined, { shape: "flat", location: "neutral", motion: "twist", mirrorX: true }),
 ];
 
 const numbers: VocabItem[] = [
@@ -661,4 +729,11 @@ export const CAMERA_SIGN_WORDS = [
   "Father",
   "Ten",
   "Fine",
+  "Good",
+  "Sorry",
+  "Happy",
+  "Hot",
+  "Cold",
+  "Understand",
+  "Proud",
 ] as const;
