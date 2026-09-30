@@ -134,10 +134,10 @@ export default function TutorPage() {
   }
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen flex-col md:flex-row">
       <Sidebar activeTab="ai-tutor" onNavigate={handleSidebarNavigate} onLogout={handleLogout} />
 
-      <main className="flex flex-1 flex-col px-6 py-8 sm:px-10">
+      <main className="flex min-h-0 flex-1 flex-col px-6 py-8 pb-24 sm:px-10 md:pb-8">
         <div className="animate-fade-up mb-6">
           <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
             AI <span className="text-sunset">Tutor</span>

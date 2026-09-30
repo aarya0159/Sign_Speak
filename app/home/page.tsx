@@ -77,10 +77,10 @@ function HomeContent() {
   }
 
   return (
-    <div className="flex min-h-screen bg-cream">
+    <div className="flex min-h-screen flex-col bg-cream md:flex-row">
       <Sidebar activeTab={activeTab} onNavigate={handleNavigate} onLogout={handleLogout} />
 
-      <main className="flex-1 overflow-y-auto px-6 py-8 sm:px-10">
+      <main className="flex-1 overflow-y-auto px-6 py-8 pb-24 sm:px-10 md:pb-8">
         <div key={activeTab} className="animate-fade-up">
           {activeTab === "dashboard" && (
             <DashboardTab

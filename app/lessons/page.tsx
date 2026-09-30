@@ -87,10 +87,10 @@ export default function LessonsPage() {
   const modulesForTier = curriculumData[activeTier];
 
   return (
-    <div className="flex min-h-screen bg-cream">
+    <div className="flex min-h-screen flex-col bg-cream md:flex-row">
       <Sidebar activeTab="lessons" onNavigate={handleSidebarNavigate} onLogout={handleLogout} />
 
-      <main className="flex-1 overflow-y-auto px-6 py-8 sm:px-10">
+      <main className="flex-1 overflow-y-auto px-6 py-8 pb-24 sm:px-10 md:pb-8">
         <div className="animate-fade-up mb-8">
           <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
             Learning <span className="text-sunset">Pathway</span>
@@ -100,24 +100,26 @@ export default function LessonsPage() {
           </p>
         </div>
 
-        <div className="animate-fade-up mb-8 inline-flex rounded-full border border-espresso/10 bg-white/70 p-1 backdrop-blur-md">
-          {TIERS.map((tier) => {
-            const isActive = tier === activeTier;
-            return (
-              <button
-                key={tier}
-                type="button"
-                onClick={() => setActiveTier(tier)}
-                className={`rounded-full px-5 py-2 text-sm font-bold transition-all duration-300 ${
-                  isActive
-                    ? "bg-gradient-to-r from-coral to-honey text-white shadow-warm-sm"
-                    : "text-espresso/60 hover:text-coral-deep"
-                }`}
-              >
-                {tierLabels[tier]}
-              </button>
-            );
-          })}
+        <div className="animate-fade-up mb-8 -mx-6 overflow-x-auto px-6 sm:mx-0 sm:px-0">
+          <div className="inline-flex shrink-0 rounded-full border border-espresso/10 bg-white/70 p-1 backdrop-blur-md">
+            {TIERS.map((tier) => {
+              const isActive = tier === activeTier;
+              return (
+                <button
+                  key={tier}
+                  type="button"
+                  onClick={() => setActiveTier(tier)}
+                  className={`shrink-0 whitespace-nowrap rounded-full px-5 py-2 text-sm font-bold transition-all duration-300 ${
+                    isActive
+                      ? "bg-gradient-to-r from-coral to-honey text-white shadow-warm-sm"
+                      : "text-espresso/60 hover:text-coral-deep"
+                  }`}
+                >
+                  {tierLabels[tier]}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         <div key={activeTier} className="animate-fade-up grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
