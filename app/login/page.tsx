@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import Link from "next/link";
 
 export default function LoginPage() {
@@ -45,7 +46,7 @@ export default function LoginPage() {
 
       <div className="card-warm animate-fade-up relative w-full max-w-md p-8">
         <Link href="/" className="mb-8 flex items-center gap-2">
-          <span className="h-3 w-3 rounded-full bg-gradient-to-br from-coral to-honey" />
+          <Image src="/logo.png" alt="SignSpeak" width={28} height={28} className="rounded-full shadow-warm-sm" />
           <h1 className="text-2xl font-extrabold tracking-tight">SignSpeak AI</h1>
         </Link>
 

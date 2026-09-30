@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import HandVisionPanel from "@/components/HandVisionPanel";
 import { framesForItem } from "@/lib/handShapes";
@@ -40,7 +41,7 @@ export default function LandingPage() {
 
       <header className="relative mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
         <div className="flex items-center gap-2">
-          <span className="h-3 w-3 rounded-full bg-gradient-to-br from-coral to-honey" aria-hidden="true" />
+          <Image src="/logo.png" alt="SignSpeak" width={28} height={28} className="rounded-full shadow-warm-sm" />
           <span className="text-lg font-extrabold tracking-tight text-espresso">SignSpeak AI</span>
         </div>
         <Link
