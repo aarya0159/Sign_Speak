@@ -28,9 +28,40 @@ interface SidebarProps {
 
 export default function Sidebar({ activeTab, onNavigate, onLogout }: SidebarProps) {
   const [expanded, setExpanded] = useState(false);
+  const [confirmingLogout, setConfirmingLogout] = useState(false);
 
   return (
     <>
+      {confirmingLogout && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-espresso/40 px-4 py-8 backdrop-blur-sm">
+          <div className="card-warm w-full max-w-sm p-6 text-center">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-rose/10 text-rose">
+              <LogOut aria-hidden="true" className="h-6 w-6" />
+            </div>
+            <h2 className="text-lg font-extrabold text-espresso">Log out of SignSpeak?</h2>
+            <p className="mt-1 text-sm text-muted">
+              You&apos;ll need to sign back in to continue your progress.
+            </p>
+            <div className="mt-6 flex gap-3">
+              <button
+                type="button"
+                onClick={() => setConfirmingLogout(false)}
+                className="flex-1 rounded-full border border-espresso/10 bg-white py-2.5 text-sm font-bold text-espresso/70 transition hover:bg-espresso/5"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={onLogout}
+                className="flex-1 rounded-full bg-rose py-2.5 text-sm font-bold text-white transition hover:bg-rose/90"
+              >
+                Log Out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Desktop / tablet: hover-expand rail */}
       <aside
         onMouseEnter={() => setExpanded(true)}
@@ -91,9 +122,9 @@ export default function Sidebar({ activeTab, onNavigate, onLogout }: SidebarProp
 
         <button
           type="button"
-          onClick={onLogout}
+          onClick={() => setConfirmingLogout(true)}
           title="Log Out Account"
-          className={`flex w-full items-center justify-center gap-2 rounded-full border border-rose/30 bg-rose/10 py-3 text-sm font-bold text-rose transition hover:bg-rose/20 ${
+          className={`flex w-full items-center justify-center gap-2 rounded-full border border-rose/30 bg-rose/10 py-3 text-sm font-bold text-rose transition hover:bg-rose hover:text-white ${
             expanded ? "px-4" : "px-0"
           }`}
         >
@@ -116,9 +147,9 @@ export default function Sidebar({ activeTab, onNavigate, onLogout }: SidebarProp
         </div>
         <button
           type="button"
-          onClick={onLogout}
+          onClick={() => setConfirmingLogout(true)}
           aria-label="Log Out Account"
-          className="rounded-full border border-rose/30 bg-rose/10 p-2 text-rose"
+          className="rounded-full border border-rose/30 bg-rose/10 p-2 text-rose transition hover:bg-rose hover:text-white"
         >
           <LogOut aria-hidden="true" className="h-5 w-5" />
         </button>
