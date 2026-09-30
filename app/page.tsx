@@ -3,31 +3,35 @@
 import Image from "next/image";
 import Link from "next/link";
 import HandVisionPanel from "@/components/HandVisionPanel";
+import { curriculumData } from "@/lib/curriculumData";
 import { framesForItem } from "@/lib/handShapes";
-import { findVocabSign } from "@/lib/vocabulary";
+import { VOCABULARY, findVocabSign } from "@/lib/vocabulary";
+
+const MODULE_COUNT = Object.values(curriculumData).flat().length;
+const SIGN_COUNT = VOCABULARY.length + 26; // + fingerspelling alphabet
 
 const FEATURES = [
   {
     icon: "⌨️",
     title: "Text → Sign",
-    description: "Type or speak a sentence and watch an animated hand sign it — real ASL signs for known words, fingerspelling for names.",
+    description: "Type a sentence and watch it signed — real ASL for known words, fingerspelling for names.",
   },
   {
     icon: "📷",
     title: "Sign → Text",
-    description: "Your camera tracks 21 hand landmarks plus movement patterns in real time and turns your signs into text and speech.",
+    description: "Your camera reads hand shape and motion in real time, turning signs into text and speech.",
   },
   {
     icon: "📚",
     title: "Guided Lessons",
-    description: "Almost 200 everyday signs across 17 themed modules, from the alphabet to full conversational phrases.",
+    description: `${SIGN_COUNT}+ everyday signs across ${MODULE_COUNT} modules, from the alphabet to full phrases.`,
   },
 ];
 
 const STATS = [
-  { value: "70M+", label: "Deaf people worldwide use sign language as their first language" },
-  { value: "300+", label: "Distinct sign languages are in use across the globe" },
-  { value: "200+", label: "Common signs and letters ready to learn inside SignSpeak" },
+  { value: "70M+", label: "Deaf people worldwide sign as a first language" },
+  { value: "300+", label: "Distinct sign languages used across the globe" },
+  { value: `${SIGN_COUNT}+`, label: "Signs and letters ready to learn inside SignSpeak" },
 ];
 
 export default function LandingPage() {
@@ -63,9 +67,7 @@ export default function LandingPage() {
             <span className="text-sunset">Understand everyone.</span>
           </h1>
           <p className="max-w-xl text-lg text-muted">
-            Over 70 million Deaf people around the world communicate primarily through sign
-            language. SignSpeak AI uses live hand tracking, animated signing, and guided lessons to
-            help you meet them halfway — one handshape at a time.
+            Live hand tracking, animated signing, and guided lessons — one handshape at a time.
           </p>
           <div className="flex flex-wrap items-center gap-4">
             <Link href="/login" className="btn-sunset px-7 py-3.5 text-sm">
@@ -114,7 +116,7 @@ export default function LandingPage() {
         <div className="overflow-hidden rounded-4xl bg-gradient-to-br from-coral via-coral-deep to-rose px-8 py-14 text-center text-white shadow-warm">
           <h2 className="text-2xl font-extrabold sm:text-3xl">Ready to start signing?</h2>
           <p className="mx-auto mt-2 max-w-xl text-peach/90">
-            Create your free account and finish your first lesson in the next five minutes.
+            Free account, first lesson in five minutes.
           </p>
           <Link
             href="/login"

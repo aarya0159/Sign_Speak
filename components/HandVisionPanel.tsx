@@ -30,11 +30,26 @@ export default function HandVisionPanel({
   total,
 }: HandVisionPanelProps) {
   const [sample, setSample] = useState<PoseStreamSample>(() => poseStreamAt(undefined, 0));
+  const [fps, setFps] = useState<number | null>(null);
   const rafRef = useRef<number | null>(null);
   const framesRef = useRef<AnimFrame[] | undefined>(frames);
   framesRef.current = frames;
+  const frameTimestampsRef = useRef<number[]>([]);
 
   const isLive = Boolean(liveLandmarks && liveLandmarks.length === 21);
+
+  // Track real update timestamps so the on-screen fps reflects what's
+  // actually rendering, in both pose-stream and live-camera modes.
+  function recordFrameTimestamp() {
+    const now = performance.now();
+    const timestamps = frameTimestampsRef.current;
+    timestamps.push(now);
+    while (timestamps.length > 0 && now - timestamps[0] > 1000) timestamps.shift();
+    if (timestamps.length >= 2) {
+      const elapsedSeconds = (now - timestamps[0]) / 1000;
+      setFps(Math.round((timestamps.length - 1) / elapsedSeconds));
+    }
+  }
 
   useEffect(() => {
     if (isLive) return; // live camera mode drives the skeleton directly
@@ -47,6 +62,7 @@ export default function HandVisionPanel({
       // stream interpolates every joint coordinate, so playback stays fluid
       // regardless of how many signs the sequence chains together.
       setSample(poseStreamAt(framesRef.current, now - start));
+      recordFrameTimestamp();
       rafRef.current = requestAnimationFrame(tick);
     }
 
@@ -55,6 +71,12 @@ export default function HandVisionPanel({
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
   }, [isLive]);
+
+  useEffect(() => {
+    if (!isLive) return;
+    recordFrameTimestamp();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLive, liveLandmarks]);
 
   const landmarks = isLive
     ? liveLandmarks!.map((p) => ({ x: p.x * VIEW_WIDTH, y: p.y * VIEW_HEIGHT }))
@@ -128,7 +150,10 @@ export default function HandVisionPanel({
           SIGN <span className="text-white">{label}</span>
         </div>
         <div className="col-span-2 truncate rounded-lg border border-white/5 bg-white/5 px-2 py-1">
-          PIPELINE <span className="text-white">gloss-free · continuous coordinates · 60 fps</span>
+          PIPELINE{" "}
+          <span className="text-white">
+            gloss-free · continuous coordinates{fps !== null ? ` · ${fps} fps` : ""}
+          </span>
         </div>
         {visualCue && (
           <div className="col-span-2 truncate rounded-lg border border-white/5 bg-white/5 px-2 py-1">

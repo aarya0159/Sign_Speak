@@ -50,7 +50,7 @@ export function DashboardTab({ userName, stats, onContinueLesson, onStartQuiz }:
         <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
           Welcome back, <span className="text-sunset">{userName}</span>
         </h1>
-        <p className="mt-1 text-muted">Here is how your sign language practice is going.</p>
+        <p className="mt-1 text-muted">Your practice, at a glance.</p>
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -72,9 +72,7 @@ export function DashboardTab({ userName, stats, onContinueLesson, onStartQuiz }:
             <p className="mt-2 text-xl font-extrabold">
               Continue Next Lesson <span className="inline-block transition-transform group-hover:translate-x-1">→</span>
             </p>
-            <p className="mt-1 text-sm text-peach/90">
-              Pick up right where you left off in the learning pathway.
-            </p>
+            <p className="mt-1 text-sm text-peach/90">Pick up where you left off.</p>
           </button>
 
           <button
@@ -86,9 +84,7 @@ export function DashboardTab({ userName, stats, onContinueLesson, onStartQuiz }:
             <p className="mt-2 text-xl font-extrabold text-espresso">
               Daily Quiz Challenge <span className="inline-block transition-transform group-hover:translate-x-1">→</span>
             </p>
-            <p className="mt-1 text-sm text-muted">
-              Test yourself against today&apos;s adaptive vocabulary quiz.
-            </p>
+            <p className="mt-1 text-sm text-muted">Today&apos;s vocabulary quiz.</p>
           </button>
         </div>
       </div>
@@ -176,9 +172,7 @@ export function TextToSignTab() {
         <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
           Text <span className="text-sunset">→</span> Sign
         </h1>
-        <p className="mt-1 text-muted">
-          Type or speak a sentence — real ASL signs are used for known words, and names are fingerspelled.
-        </p>
+        <p className="mt-1 text-muted">Type or speak a sentence to see it signed.</p>
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
@@ -333,9 +327,7 @@ export function DictionaryTab({ onStartQuiz }: DictionaryTabProps) {
         <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
           Dictionary <span className="text-sunset">&amp;</span> Quizzes
         </h1>
-        <p className="mt-1 text-muted">
-          {allVocab.length} signs and letters — search, browse by topic, and preview each one.
-        </p>
+        <p className="mt-1 text-muted">{allVocab.length} signs and letters to search and browse.</p>
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">

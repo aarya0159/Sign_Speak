@@ -78,9 +78,7 @@ export default function LessonsPage() {
           <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
             Learning <span className="text-sunset">Pathway</span>
           </h1>
-          <p className="mt-1 text-muted">
-            Progress through structured tiers, one module at a time.
-          </p>
+          <p className="mt-1 text-muted">One module at a time.</p>
         </div>
 
         <div className="animate-fade-up mb-8 -mx-6 overflow-x-auto px-6 sm:mx-0 sm:px-0">

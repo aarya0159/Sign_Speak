@@ -147,8 +147,7 @@ export default function TutorPage() {
             AI <span className="text-sunset">Tutor</span>
           </h1>
           <p className="mt-1 text-muted">
-            Your personal ASL coach — ask about signs, facial expressions, Deaf culture, or your
-            study plan.
+            Your personal ASL coach.
             {isOffline && (
               <span className="ml-2 chip-warm">offline coach mode</span>
             )}
