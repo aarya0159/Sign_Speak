@@ -26,12 +26,12 @@ interface StatCardProps {
 
 function StatCard({ label, value, icon }: StatCardProps) {
   return (
-    <div className="card-warm card-warm-hover p-5">
-      <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-peach to-apricot/40 text-lg">
+    <div className="card-warm card-warm-hover p-3 sm:p-5">
+      <div className="mb-2 flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-peach to-apricot/40 text-base sm:mb-3 sm:h-10 sm:w-10 sm:rounded-2xl sm:text-lg">
         <span aria-hidden="true">{icon}</span>
       </div>
-      <p className="text-2xl font-extrabold text-espresso">{value}</p>
-      <p className="text-sm font-medium text-muted">{label}</p>
+      <p className="text-lg font-extrabold text-espresso sm:text-2xl">{value}</p>
+      <p className="text-xs font-medium text-muted sm:text-sm">{label}</p>
     </div>
   );
 }
@@ -53,7 +53,7 @@ export function DashboardTab({ userName, stats, onContinueLesson, onStartQuiz }:
         <p className="mt-1 text-muted">Your practice, at a glance.</p>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         <StatCard label="Current Streak" value={`${stats.streak} days`} icon="🔥" />
         <StatCard label="Studied This Week" value={`${stats.studiedThisWeek} days`} icon="📅" />
         <StatCard label="Time Spent" value={formatMinutes(stats.timeSpentMinutes)} icon="⏱️" />
