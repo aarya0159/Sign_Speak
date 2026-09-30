@@ -2,21 +2,22 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { Bot, BookOpen, Camera, Home, Keyboard, LibraryBig, LogOut, type LucideIcon } from "lucide-react";
 import { TabKey } from "@/lib/types";
 
 interface NavItem {
   key: TabKey;
   label: string;
-  icon: string;
+  icon: LucideIcon;
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { key: "dashboard", label: "Dashboard Home", icon: "🏠" },
-  { key: "lessons", label: "Lessons", icon: "📚" },
-  { key: "text-to-sign", label: "Text to Sign", icon: "⌨️" },
-  { key: "sign-to-text", label: "Sign to Text", icon: "📷" },
-  { key: "dictionary", label: "Dictionary & Quizzes", icon: "📖" },
-  { key: "ai-tutor", label: "AI Tutor", icon: "🤖" },
+  { key: "dashboard", label: "Dashboard Home", icon: Home },
+  { key: "lessons", label: "Lessons", icon: BookOpen },
+  { key: "text-to-sign", label: "Text to Sign", icon: Keyboard },
+  { key: "sign-to-text", label: "Sign to Text", icon: Camera },
+  { key: "dictionary", label: "Dictionary & Quizzes", icon: LibraryBig },
+  { key: "ai-tutor", label: "AI Tutor", icon: Bot },
 ];
 
 interface SidebarProps {
@@ -74,9 +75,7 @@ export default function Sidebar({ activeTab, onNavigate, onLogout }: SidebarProp
                       : "border border-transparent text-espresso/70 hover:bg-peach/50 hover:text-coral-deep hover:translate-x-0.5"
                   }`}
                 >
-                  <span aria-hidden="true" className="text-lg">
-                    {item.icon}
-                  </span>
+                  <item.icon aria-hidden="true" className="h-5 w-5 shrink-0" />
                   <span
                     className={`overflow-hidden whitespace-nowrap transition-all duration-200 ${
                       expanded ? "max-w-[10rem] opacity-100" : "max-w-0 opacity-0"
@@ -94,16 +93,17 @@ export default function Sidebar({ activeTab, onNavigate, onLogout }: SidebarProp
           type="button"
           onClick={onLogout}
           title="Log Out Account"
-          className={`w-full rounded-full border border-rose/30 bg-rose/10 py-3 text-sm font-bold text-rose transition hover:bg-rose/20 ${
+          className={`flex w-full items-center justify-center gap-2 rounded-full border border-rose/30 bg-rose/10 py-3 text-sm font-bold text-rose transition hover:bg-rose/20 ${
             expanded ? "px-4" : "px-0"
           }`}
         >
+          <LogOut aria-hidden="true" className="h-4 w-4 shrink-0" />
           <span
-            className={`block overflow-hidden whitespace-nowrap transition-all duration-200 ${
-              expanded ? "opacity-100" : "opacity-0"
+            className={`overflow-hidden whitespace-nowrap transition-all duration-200 ${
+              expanded ? "max-w-[10rem] opacity-100" : "max-w-0 opacity-0"
             }`}
           >
-            {expanded ? "Log Out Account" : "⎋"}
+            Log Out Account
           </span>
         </button>
       </aside>
@@ -118,9 +118,9 @@ export default function Sidebar({ activeTab, onNavigate, onLogout }: SidebarProp
           type="button"
           onClick={onLogout}
           aria-label="Log Out Account"
-          className="rounded-full border border-rose/30 bg-rose/10 px-3 py-1.5 text-lg text-rose"
+          className="rounded-full border border-rose/30 bg-rose/10 p-2 text-rose"
         >
-          ⎋
+          <LogOut aria-hidden="true" className="h-5 w-5" />
         </button>
       </div>
 
@@ -140,9 +140,7 @@ export default function Sidebar({ activeTab, onNavigate, onLogout }: SidebarProp
                 isActive ? "text-coral-deep" : "text-espresso/60"
               }`}
             >
-              <span aria-hidden="true" className="text-xl">
-                {item.icon}
-              </span>
+              <item.icon aria-hidden="true" className="h-5 w-5" />
               <span className="leading-tight">{item.label.split(" ")[0]}</span>
             </button>
           );

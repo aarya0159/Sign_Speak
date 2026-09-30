@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Sidebar from "@/components/Sidebar";
 import { TabKey } from "@/lib/types";
+import { getDashboardStats, recordActivity } from "@/lib/stats";
+import { useSessionTimer } from "@/lib/useSessionTimer";
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -17,21 +19,20 @@ interface StoredContext {
   missedLetters: string[];
 }
 
-const DEFAULT_CONTEXT: StoredContext = {
-  streak: 0,
-  studiedThisWeek: 0,
-  lessonsCompleted: 0,
-  missedLetters: [],
-};
-
 function readStoredContext(): StoredContext {
+  const stats = getDashboardStats();
+  let missedLetters: string[] = [];
   try {
-    const stats = JSON.parse(localStorage.getItem("signspeak_stats") || "{}");
-    const missedLetters = JSON.parse(localStorage.getItem("signspeak_missed_letters") || "[]");
-    return { ...DEFAULT_CONTEXT, ...stats, missedLetters };
+    missedLetters = JSON.parse(localStorage.getItem("signspeak_missed_letters") || "[]");
   } catch {
-    return DEFAULT_CONTEXT;
+    missedLetters = [];
   }
+  return {
+    streak: stats.streak,
+    studiedThisWeek: stats.studiedThisWeek,
+    lessonsCompleted: stats.lessonsCompleted,
+    missedLetters,
+  };
 }
 
 const SUGGESTED_QUESTIONS = [
@@ -48,7 +49,10 @@ export default function TutorPage() {
   const [isOffline, setIsOffline] = useState(false);
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
+  useSessionTimer();
+
   useEffect(() => {
+    recordActivity();
     const context = readStoredContext();
     const streakNote = context.streak > 0 ? ` You're on a ${context.streak}-day streak — love to see it.` : "";
     const missedNote =

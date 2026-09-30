@@ -3,10 +3,12 @@
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Sidebar from "@/components/Sidebar";
-import { DashboardStats, DashboardTab, DictionaryTab, TextToSignTab } from "@/components/HomeTabs";
+import { DashboardTab, DictionaryTab, TextToSignTab } from "@/components/HomeTabs";
 import SignToTextTab from "@/components/SignToTextTab";
 import QuizModal from "@/components/QuizModal";
 import { TabKey } from "@/lib/types";
+import { DashboardStats, getDashboardStats, recordActivity } from "@/lib/stats";
+import { useSessionTimer } from "@/lib/useSessionTimer";
 
 const TAB_KEYS: TabKey[] = [
   "dashboard",
@@ -21,13 +23,6 @@ function isTabKey(value: string | null): value is TabKey {
   return value !== null && (TAB_KEYS as string[]).includes(value);
 }
 
-const DEFAULT_STATS: DashboardStats = {
-  streak: 6,
-  studiedThisWeek: 4,
-  timeSpentMinutes: 128,
-  lessonsCompleted: 12,
-};
-
 function HomeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -37,21 +32,21 @@ function HomeContent() {
     isTabKey(requestedTab) ? requestedTab : "dashboard",
   );
   const [userName, setUserName] = useState("Learner");
-  const [stats, setStats] = useState<DashboardStats>(DEFAULT_STATS);
+  const [stats, setStats] = useState<DashboardStats>({
+    streak: 0,
+    studiedThisWeek: 0,
+    timeSpentMinutes: 0,
+    lessonsCompleted: 0,
+  });
   const [isQuizOpen, setIsQuizOpen] = useState(false);
+
+  useSessionTimer();
 
   useEffect(() => {
     const storedName = localStorage.getItem("signspeak_user_name");
     if (storedName) setUserName(storedName);
 
-    const storedStats = localStorage.getItem("signspeak_stats");
-    if (storedStats) {
-      try {
-        setStats({ ...DEFAULT_STATS, ...JSON.parse(storedStats) });
-      } catch {
-        setStats(DEFAULT_STATS);
-      }
-    }
+    setStats(recordActivity());
   }, []);
 
   useEffect(() => {

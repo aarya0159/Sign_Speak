@@ -1,47 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Sidebar from "@/components/Sidebar";
 import FlashcardModal from "@/components/FlashcardModal";
 import { curriculumData, tierLabels } from "@/lib/curriculumData";
 import { CurriculumModule, TabKey, Tier } from "@/lib/types";
+import { incrementLessonsCompleted, recordActivity } from "@/lib/stats";
+import { useSessionTimer } from "@/lib/useSessionTimer";
 
 const TIERS: Tier[] = ["beginner", "intermediate", "advanced"];
 
-interface StoredStats {
-  streak: number;
-  studiedThisWeek: number;
-  timeSpentMinutes: number;
-  lessonsCompleted: number;
-}
-
-const DEFAULT_STATS: StoredStats = {
-  streak: 6,
-  studiedThisWeek: 4,
-  timeSpentMinutes: 128,
-  lessonsCompleted: 12,
-};
-
 function markModuleComplete(moduleId: string) {
-  let stats: StoredStats = DEFAULT_STATS;
-  const stored = localStorage.getItem("signspeak_stats");
-  if (stored) {
-    try {
-      stats = { ...DEFAULT_STATS, ...JSON.parse(stored) };
-    } catch {
-      stats = DEFAULT_STATS;
-    }
-  }
-
   const completedModules = new Set<string>(
     JSON.parse(localStorage.getItem("signspeak_completed_modules") || "[]"),
   );
 
   if (!completedModules.has(moduleId)) {
     completedModules.add(moduleId);
-    stats = { ...stats, lessonsCompleted: stats.lessonsCompleted + 1 };
-    localStorage.setItem("signspeak_stats", JSON.stringify(stats));
+    incrementLessonsCompleted();
     localStorage.setItem(
       "signspeak_completed_modules",
       JSON.stringify(Array.from(completedModules)),
@@ -63,6 +40,12 @@ export default function LessonsPage() {
       return new Set();
     }
   });
+
+  useSessionTimer();
+
+  useEffect(() => {
+    recordActivity();
+  }, []);
 
   function handleSidebarNavigate(tab: TabKey) {
     if (tab === "lessons") return;

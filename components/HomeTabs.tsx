@@ -7,13 +7,9 @@ import { AnimFrame, framesForItem, letterFrame } from "@/lib/handShapes";
 import { VocabItem } from "@/lib/types";
 import { useSpeechRecognition } from "@/lib/useSpeechRecognition";
 import { CATEGORIES, Category, VOCABULARY, findVocabSign } from "@/lib/vocabulary";
+import { DashboardStats } from "@/lib/stats";
 
-export interface DashboardStats {
-  streak: number;
-  studiedThisWeek: number;
-  timeSpentMinutes: number;
-  lessonsCompleted: number;
-}
+export type { DashboardStats };
 
 function formatMinutes(totalMinutes: number): string {
   const hours = Math.floor(totalMinutes / 60);
