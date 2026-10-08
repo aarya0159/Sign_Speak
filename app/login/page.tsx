@@ -10,6 +10,7 @@ export default function LoginPage() {
   const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   function handleSignIn(event: React.FormEvent) {
@@ -80,15 +81,29 @@ export default function LoginPage() {
           </div>
           <div>
             <label className="mb-1 block text-sm font-bold text-espresso/80">Password</label>
-            <input
-              type="password"
-              required
-              minLength={6}
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              placeholder="At least 6 characters"
-              className="w-full rounded-full border border-espresso/10 bg-white px-5 py-3 text-sm outline-none focus:border-coral focus:shadow-warm-sm"
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                required
+                minLength={6}
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                placeholder="At least 6 characters"
+                className="w-full rounded-full border border-espresso/10 bg-white py-3 pl-5 pr-12 text-sm outline-none focus:border-coral focus:shadow-warm-sm"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-espresso/60 hover:text-coral"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                  <circle cx="12" cy="12" r="3" />
+                  {showPassword && <path d="M3 3l18 18" />}
+                </svg>
+              </button>
+            </div>
           </div>
 
           {error && (

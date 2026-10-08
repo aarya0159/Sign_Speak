@@ -156,7 +156,7 @@ export default function Sidebar({ activeTab, onNavigate, onLogout }: SidebarProp
       </div>
 
       <nav
-        className="fixed inset-x-0 bottom-0 z-30 flex items-center justify-around border-t border-espresso/10 bg-white/90 px-1 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden"
+        className="fixed inset-x-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-30 flex items-center justify-around rounded-3xl border border-espresso/10 bg-white/95 px-1 shadow-lg shadow-espresso/15 backdrop-blur-md md:hidden"
         aria-label="Primary"
       >
         {NAV_ITEMS.map((item) => {
