@@ -1,4 +1,4 @@
-package com.athenaeducation.signspeak;
+package com.signspeak.aarya;
 
 import com.getcapacitor.BridgeActivity;
 

@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.athenaeducation.signspeak',
+  appId: 'com.signspeak.aarya',
   appName: 'SignSpeak',
   webDir: 'www',
   server: {
